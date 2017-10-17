@@ -16,39 +16,47 @@ EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdo
 * Any FQDN in the blacklist will force dnsmasq to return the configured dns redirect IP address
 
 ## Compatibility
-* update-dnsmasq.pl has been tested on the EdgeRouter Lite family of routers, versions v1.7.0-v1.9.1.1
+* update-dnsmasq.pl has been tested on the EdgeRouter Lite family of routers, versions v1.7.0-v1.9.7+hotfix.4
 * Since the EdgeOS is a fork and port of Vyatta 6.3, this script could be adapted to work on VyOS and Vyatta derived ports
 
 ## Installation
 
 - To install:
-    * IMPORTANT, Replace <VERSION> with the downloaded version # and <PATH> with the download link to the desired version!
-    * upload install_dnsmasq_blklist.v<VERSION>.tgz to your router (ensure you modify the command if you want to install an older version)
-        - curl -o /tmp/install_dnsmasq_blklist.v<VERSION>.tgz
+    * IMPORTANT, Replace [VERSION] with the downloaded version # and <PATH> with the download link to the desired version!
+    * upload install_dnsmasq_blklist.v[VERSION].tgz to your router (ensure you modify the command if you want to install an older version)
+        - curl -o /tmp/install_dnsmasq_blklist.v[VERSION].tgz
         - cd /tmp
-        - sudo tar zxvf ./install_dnsmasq_blklist.v<VERSION>.tgz
-        - bash ./install_dnsmasq_blklist.v<VERSION>
+        - sudo tar zxvf ./install_dnsmasq_blklist.v[VERSION].tgz
+        - bash ./install_dnsmasq_blklist.v[VERSION]
         - select menu option #1 if installing for the first time
         - select menu option #2 to completely remove blacklisting if you have a previous version, then run install again using option #1
 
 ## Removal
-* sudo /tmp/install_dnsmasq_blklist.v<VERSION>
+* sudo /tmp/install_dnsmasq_blklist.v[VERSION]
 * select option #2
 
 ## Versions
-
-* v3.6.3.3: Enhancements
+* v3.6.4:
+- Fixes
+    - Removed YoYo source as it is no longer active
+    - Tested with EdgeOS v1.9.7+hotfix.4
+---
+* v3.6.3.3:
+- Enhancements
     - Additional exclusions added to the blacklist commands file
-
-* v3.6.3.2: Fixes
+---
+* v3.6.3.2:
+- Fixes
     - Rewrote version checker to handle EdgeOS versions with an additional sub releases, i.e. v1.9.1.1, v1.9.1.1.1, etc
     - Added additional logic to skip testing if main installer exited with an error
 ---
-* v3.6.3.1: Fixes
+* v3.6.3.1:
+- Fixes
     - Updated blacklist exclusions and includes
     - Removed volkerschatz as a source, since the blacklisting service is no longer offered
 ---
-* v3.6: Enhancements
+* v3.6:
+- Enhancements
     - Ability to add a source that uses a local file instead of HTTP
 
             set service dns forwarding blacklist hosts source myhosts description 'Blacklist file source'
@@ -126,7 +134,7 @@ EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdo
     - Additional excludes added to blacklist configuration list
 ---
 * v3.5.3:
-    - Updates/fixes include:
+- Updates/fixes include:
     - Added code to fix 'set' failures if /opt/vyatta/active/service/dns/forwarding/ group ownership isn't writable for the operator
     - Additional excludes added based on user feedback
     - Minor optimizations and additional tests added
