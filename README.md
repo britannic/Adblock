@@ -36,6 +36,11 @@ EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdo
 * select option #2
 
 ## Versions
+
+* Version 3.6.4.1:
+- Fix
+    - Added back YoYo source as it is back online
+
 * v3.6.4:
 - Fixes
     - Removed YoYo source as it is no longer active
