@@ -486,6 +486,7 @@ sub is_admin {
 sub is_build {
   my $input = is_version();
 
+  # ER-Lite
   # v1.2.0:           build 4574253
   # v1.4.1:           build 4648309
   # v1.5.0:           build 4677648
@@ -502,7 +503,14 @@ sub is_build {
   # v1.9.7+hotfix.3:  build 5013619
   # v1.9.7+hotfix.4:  build 5024004
 
-  if ( $input->{build} >= 5024004 )    # script tested on os v1.7.0 & above
+  # ER-X
+  # v1.9.7+hotfix.4:  build 5024279
+
+  # UniFi Security Gateway
+  # v4.3.49:          build 5001153 USG
+  # v4.4.8:           build 5023698 USG
+
+  if ( $input->{build} >= 5001153 )    # script tested on os v1.7.0 & above
   {
     return $TRUE;
   }
@@ -520,12 +528,13 @@ sub is_configure {
 
 # get EdgeOS version
 sub is_version {
+  my @ver;
   my ( $build, $version ) = ( q{UNKNOWN BUILD}, q{UNKNOWN VERSION} );
-  my $cmd = qq{cat /opt/vyatta/etc/version};
+  my $cmd = qq{cat /etc/version};
   chomp( my $edgeOS = qx{$cmd} );
 
-  if ( $edgeOS =~ s{^Version:\s*(?<VERSION>.*)$}{$+{VERSION}}xms ) {
-    my @ver = split /\./ => $edgeOS;
+#   if ( $edgeOS =~ s{^Version:\s*(?<VERSION>.*)$}{$+{VERSION}}xms ) {
+  if ( @ver = split /\./ => $edgeOS ) {
     $version = join "." => @ver[ 0..$#ver-3];
     $build = $ver[$#ver-2];
   }

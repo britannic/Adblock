@@ -44,7 +44,7 @@ install_menu () {
 
 while true;
 do
-	echo -ne "Would you like to INSTALL, REMOVE, TEST or BACKUP dnsmasq blacklist functionality (if previously installed)?\n\nRun PURGE to clean up stale config sessions.\n\n" | fold -s -w ${COLUMNS}
+	echo -ne "Would you like to INSTALL, REMOVE, TEST or BACKUP dnsmasq blacklist functionality?\n\nRun PURGE to clean up stale config sessions.\n\n" | fold -s -w ${COLUMNS}
 	select CHOICE in ${OPTIONS[@]}; do
 		case ${REPLY} in
 			1)		clear console
@@ -69,7 +69,7 @@ do
 					return 1
 					;;
 			2)		clear console
-					if /opt/vyatta/bin/yesno -n 'Do you want to completely remove dnsmasq blacklist v$VERSION? [y/N]: '
+					if /opt/vyatta/bin/yesno -n "Do you want to completely remove dnsmasq blacklist v$VERSION? [y/N]: "
 					then
 						./remove
 						break

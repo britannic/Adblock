@@ -37,6 +37,11 @@ EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdo
 
 ## Versions
 
+* Version 3.6.4.2:
+- Enhancements and minor bug fix
+    - Added experimental support for UniFi Security Gateways (version v4.3.49 and above)
+    - Fixed a minor version display bug when running "update-dnsmasq.pl -version"
+
 * Version 3.6.4.1:
 - Fix
     - Added back YoYo source as it is back online
