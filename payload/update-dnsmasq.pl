@@ -3,14 +3,14 @@
 # **** License ****
 # COPYRIGHT AND LICENCE
 #
-# Copyright (C) 2016 by Neil Beadle
+# Copyright (C) 2017 by Neil Beadle
 #
 # This script is free software; you can redistribute it and/or modify
 # it under the same terms as Perl itself, either Perl version 5.23.4 or,
 # at your option, any later version of Perl 5 you may have available.
 #
 # Author: Neil Beadle
-# Date:   April 2016
+# Date:   October 2017
 # Description: Script for creating dnsmasq configuration files to redirect dns
 # look ups to alternative IPs (blackholes, pixel servers etc.)
 #
@@ -31,6 +31,7 @@ use EdgeOS::DNS::Blacklist (
     $c
     $FALSE
     $TRUE
+    $VERSION
     delete_file
     get_cfg_actv
     get_cfg_file
@@ -47,7 +48,7 @@ use EdgeOS::DNS::Blacklist (
 );
 delete $ENV{PATH};
 my ( $cfg_file, $show );
-my $version = q{3.6.3.1};
+# my $version = q{3.6.4.1};
 my $cols    = get_cols();
 
 ############################### script runs here ###############################
@@ -128,7 +129,7 @@ sub main {
       show    => $show,
       msg_typ => q{info},
       msg_str =>,
-      qq{---+++ dnsmasq blacklist $version +++---},
+      qq{---+++ dnsmasq blacklist $VERSION +++---},
     }
   );
 
@@ -503,7 +504,7 @@ sub usage {
     },
     version => sub {
       my $exitcode = shift;
-      printf STDERR qq{%s version: %s\n}, $progname, $version;
+      printf STDERR qq{%s version: %s\n}, $progname, $VERSION;
       exit $exitcode;
     },
   };

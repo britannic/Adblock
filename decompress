@@ -1,9 +1,8 @@
-#!/bin/bash
+
 echo
-echo 'Self Extracting Installer'
+echo "Self Extracting Installer for dnsmasq blacklist v${VERSION}"
 echo
 
-VERSION='v3.2.1'
 # Set up the EdgeOS environment
 source /opt/vyatta/etc/functions/script-template
 shopt -s expand_aliases
@@ -70,11 +69,12 @@ do
 					return 1
 					;;
 			2)		clear console
-					if /opt/vyatta/bin/yesno -n 'Do you want to completely remove Blacklist? [y/N]: '
+					if /opt/vyatta/bin/yesno -n 'Do you want to completely remove dnsmasq blacklist v$VERSION? [y/N]: '
 					then
 						./remove
 						break
 					fi
+					break
 					;;
 			3)		clear console
 					sudo ./blacklist.t
@@ -85,7 +85,7 @@ do
 					then
 						RESULT=$(run show configuration commands | grep blacklist > /config/user-data/blacklist.cmds)
 						tput setaf 2
-						echo -ne "\ndnsmasq blacklist configuration backed up to /config/user-data/blacklist.cmds\n\n"
+						echo -ne "\ndnsmasq blacklist v$VERSION configuration backed up to /config/user-data/blacklist.cmds\n\n"
 						tput setaf 7
 						echo -ne "To restore, run:\n\tconfigure\n\tsource /config/user-data/blacklist.cmds\n\tcommit\n\tsave\n\texit\n\n" | fold -s -w ${COLUMNS}
 					else

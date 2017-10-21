@@ -10,7 +10,7 @@
 # at your option, any later version of Perl 5 you may have available.
 #
 # Author: Neil Beadle
-# Date:   April 2016
+# Date:   October 2017
 # Description: Script for creating dnsmasq configuration files to redirect dns
 # look ups to alternative IPs (blackholes, pixel servers etc.)
 #
@@ -36,6 +36,7 @@ use EdgeOS::DNS::Blacklist (
     $c
     $FALSE
     $TRUE
+    $VERSION
     get_cfg_actv
     get_file
     get_url
@@ -50,7 +51,6 @@ use EdgeOS::DNS::Blacklist (
     }
 );
 
-chomp( my $version = qx{cat version} );
 my ($cols) = qx{tput cols};
 my $prg     = { errors => 0, calls => 0, };
 my $program = basename($0);
@@ -626,7 +626,7 @@ sub main {
     {
       cols    => $cols,
       eof     => qq{\n},
-      msg_str => qq{---+++ $name $program $version +++--- },
+      msg_str => qq{---+++ $name $program $VERSION +++--- },
       msg_typ => q{info},
       show    => $TRUE,
     }
@@ -640,7 +640,7 @@ sub main {
             cols => $cols,
             eof  => qq{\n},
             msg_str =>
-              qq{Installing $name version $version blocking dnsmasq support},
+              qq{Installing $name version $VERSION blocking dnsmasq support},
             msg_typ => q{info},
             show    => $TRUE,
           }
@@ -650,7 +650,7 @@ sub main {
             {
               cols    => $cols,
               eof     => qq{\n},
-              msg_str => qq{$name version $version installation successful},
+              msg_str => qq{$name version $VERSION installation successful},
               msg_typ => q{info},
               show    => $TRUE,
             }
@@ -672,7 +672,7 @@ sub main {
             {
               cols    => $cols,
               eof     => qq{\n},
-              msg_str => qq{$name version $version installation failed!}
+              msg_str => qq{$name version $VERSION installation failed!}
                 . qq{\nReview /var/log/messages\n}
                 . qq{$prg->{errors}/$prg->{errors} calls failed},
               msg_typ => q{error},
@@ -704,7 +704,7 @@ sub main {
           {
             cols    => $cols,
             eof     => qq{\n},
-            msg_str => qq{$name version $version removal successful},
+            msg_str => qq{$name version $VERSION removal successful},
             msg_typ => q{info},
             show    => $TRUE,
           }
@@ -726,7 +726,7 @@ sub main {
           {
             cols    => $cols,
             eof     => qq{\n},
-            msg_str => qq{$name version $version removal failed!}
+            msg_str => qq{$name version $VERSION removal failed!}
               . qq{\nReview /var/log/messages\n}
               . qq{$prg->{errors}/$prg->{errors} calls failed},
             msg_typ => q{error},

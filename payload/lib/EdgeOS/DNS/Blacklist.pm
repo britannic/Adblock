@@ -55,6 +55,7 @@ our @EXPORT_OK = (
     $FALSE
     $spoke
     $TRUE
+    $VERSION
     delete_file
     get_cfg_actv
     get_cfg_file
@@ -77,7 +78,7 @@ our @EXPORT_OK = (
     write_file
     }
 );
-our $VERSION = q{1.6.3};
+our $VERSION = q{3.6.4.2};
 our $TRUE;
 *TRUE = \1;
 our $FALSE;
