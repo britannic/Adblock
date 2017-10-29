@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+#
+# **** License ****
+# COPYRIGHT AND LICENCE
+#
+# Copyright (C) 2017 Helmrock Consulting
+#
+# This library is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself, either Perl version 5.23.4 or,
+# at your option, any later version of Perl 5 you may have available.
+# **** End License ****
+#
+# Author: Neil Beadle
+# Description: Scripts for creating dnsmasq configuration files to redirect dns
+# look ups to alternative IPs (blackholes, pixel servers etc.)
+
+export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
+export COPYFILE_DISABLE=true
+
+PWD=$(pwd)
+VERSION=$(grep 'our $VERSION' ${PWD}/payload/lib/EdgeOS/DNS/Blacklist.pm | gsed 's/^our $VERSION = q{\(.*\)};/\1/')
+NAME='dnsmasq_blklist'
+DROPBOX="~/Dropbox/EdgeMax"
+BLACKLIST="${NAME}.${VERSION}."
+INSTALL="install_${NAME}.v${VERSION}"
+PAYLOAD='payload'
+LIB="~/Projects/AdBlock/payload/lib/EdgeOS/DNS/Blacklist.pm"
+SEDCMD='s/Copyright (C) 20../Copyright (C) '$(date +"%Y")'/g'
+SED='gsed -i.bak '
+UPDATE_RDME_VER='s/install_dnsmasq_blklist\.v\([0-9]*\.[0-9]*\.[0-9]*\)\(.*$\)/install_dnsmasq_blklist.v'${VERSION}'\2/g'
+
+if [[ -e "${0##*/}" ]]; then
+	BASEDIR="$(pwd)"
+	[[ -f ${BLACKLIST}setup.tgz ]] && rm ${BLACKLIST}setup.tgz
+# Update README.md instructions with current version
+	eval ${SED} \'${UPDATE_RDME_VER}\' README.md
+	cd ${PAYLOAD}
+	cp setup remove
+
+# Update Copyright to current year
+	for i in $(find . -type f ! -path "./payload/blacklist/*" ! -path "./.git/*" ! -name '*.bak' ! -name '.?*')
+	do
+		eval ${SED} \'${SEDCMD}\' ${i}
+	done
+
+	tar zcf ../${PAYLOAD}.tgz --exclude='._*' --exclude='.svn' --exclude='.DS_Store' --exclude='*.bak' --exclude='*~' ./*
+	cd ..
+
+	if [[ -e ${PAYLOAD}.tgz ]]; then
+		for i in LICENSE decompress README.md
+		do
+# Update Copyright to current year
+			eval ${SED} \'${SEDCMD}\' ${i}
+		done
+		cat decompress ${PAYLOAD}.tgz >> ${INSTALL}
+	else
+		echo "${PAYLOAD}.tgz does not exist"
+		exit 1
+	fi
+
+	chmod 0755 ${INSTALL}
+	tar zcf ${INSTALL}.tgz ${INSTALL}
+	echo "${INSTALL} created"
+	[[ -d "${DROPBOX}/" ]] && install -m 0755 ${INSTALL}.tgz "${DROPBOX}/"
+	tar -zcf ../${BLACKLIST}setup.tgz --exclude='._*' --exclude='.svn' --exclude='.DS_Store' --exclude='*.bak' --exclude='*~' "${BASEDIR}"/*
+	mv ../${BLACKLIST}setup.tgz "${BASEDIR}"/
+
+# scp the build to our test router for debugging
+	[[ ${1} ]] && /usr/bin/scp -i ~/.ssh/jeff_id_rsa "${BASEDIR}"/${INSTALL} ${1}@unms-server:/tmp/${INSTALL}
+
+else
+	echo "$(basename $0) must be run in the directory where it is located."
+fi
+exit 0

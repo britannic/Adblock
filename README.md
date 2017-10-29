@@ -25,20 +25,22 @@ EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdo
 ## Installation
 
 - To install:
-    * IMPORTANT, Replace [VERSION] with the downloaded version # and <PATH> with the download link to the desired version!
-    * upload install_dnsmasq_blklist.v[VERSION].tgz to your router (ensure you modify the command if you want to install an older version)
-        - curl -o /tmp/install_dnsmasq_blklist.v[VERSION].tgz
+    * upload install_dnsmasq_blklist.v3.6.5.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.6.5.tgz
         - cd /tmp
-        - sudo tar zxvf ./install_dnsmasq_blklist.v[VERSION].tgz
-        - bash ./install_dnsmasq_blklist.v[VERSION]
+        - sudo tar zxvf ./install_dnsmasq_blklist.v3.6.5.tgz
+        - bash ./install_dnsmasq_blklist.v3.6.5
         - select menu option #1 if installing for the first time
         - select menu option #2 to completely remove blacklisting if you have a previous version, then run install again using option #1
 
 ## Removal
-* sudo /tmp/install_dnsmasq_blklist.v[VERSION]
+* sudo /tmp/install_dnsmasq_blklist.v3.6.5
 * select option #2
 
 ## Versions
+* Version 3.6.5
+- Enhancements
+    - Version 3.6.5 updated to fix directory group ownership for /opt/vyatta/config which leads to issues when attempting commits as the admin user (factory default admin user is ubnt). Group ownership should by vyattcfg.
 
 * Version 3.6.4.2:
 - Enhancements and minor bug fix
