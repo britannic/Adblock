@@ -3,6 +3,9 @@
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
+## Copyright
+* Copyright (C) 2017 Helmrock Consulting
+
 ## Overview
 EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at (https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
 

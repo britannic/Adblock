@@ -4,6 +4,7 @@
 *.txt
 *.bbprojectdata
 *.bbprojectsettings
+*.bak
 
 browse.VC.db
 

@@ -1,6 +1,23 @@
 #!/usr/bin/env bash
 #
-# This script cleans up orphaned configure sessions and releases disk (RAM) space
+# **** License ****
+# COPYRIGHT AND LICENCE
+#
+# Copyright (C) 2017 Helmrock Consulting
+#
+# This library is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself, either Perl version 5.23.4 or,
+# at your option, any later version of Perl 5 you may have available.
+#
+# Author: Neil Beadle
+# Description: Scripts for creating dnsmasq configuration files to redirect dns
+# look ups to alternative IPs (blackholes, pixel servers etc.)
+# **** End License ****
+#
+# Author: Neil Beadle
+# Description: This script cleans up orphaned configure sessions and releases
+# disk space
+
 VERSION='0.7'
 ME=$(basename ${0})
 

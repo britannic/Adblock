@@ -3,18 +3,19 @@
 # **** License ****
 # COPYRIGHT AND LICENCE
 #
-# Copyright (C) 2017 by Neil Beadle
+# Copyright (C) 2017 Helmrock Consulting
 #
 # This library is free software; you can redistribute it and/or modify
 # it under the same terms as Perl itself, either Perl version 5.23.4 or,
 # at your option, any later version of Perl 5 you may have available.
 #
-# Author: Neil Beadle
-# Date:   October 2017
-# Description: Scripts for creating dnsmasq configuration files to redirect dns
-# look ups to alternative IPs (blackholes, pixel servers etc.)
-#
 # **** End License ****
+#
+# Author: Neil Beadle
+# Description: Script tests dnsmasq blacklisting to check that DNS look
+# ups are redirected to alternative IPs (blackholes, pixel servers etc.)
+#
+
 use feature qw{switch};
 use lib q{/opt/vyatta/share/perl5};
 use lib q{/config/lib/perl};

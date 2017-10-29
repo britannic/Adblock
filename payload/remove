@@ -3,20 +3,18 @@
 # **** License ****
 # COPYRIGHT AND LICENCE
 #
-# Copyright (C) 2017 by Neil Beadle
+# Copyright (C) 2017 Helmrock Consulting
 #
-# This script is free software; you can redistribute it and/or modify
+# This library is free software; you can redistribute it and/or modify
 # it under the same terms as Perl itself, either Perl version 5.23.4 or,
 # at your option, any later version of Perl 5 you may have available.
+# **** End License ****
 #
 # Author: Neil Beadle
-# Date:   October 2017
-# Description: Script for creating dnsmasq configuration files to redirect dns
-# look ups to alternative IPs (blackholes, pixel servers etc.)
 #
-# **** End License ****
-# Install dnsmasq blacklist blocking onto an EdgeMax router
-# Use at your own risk
+# Description: Script installs dnsmasq blacklisting EdgeOS template files to redirect dns
+# look ups to alternative IPs (blackholes, pixel servers etc.)
+# USE AT YOUR OWN RISK!
 #
 use feature qw(switch);
 use File::Basename;
@@ -64,6 +62,7 @@ my $save    = q{sudo /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save};
 my $set     = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set};
 my $cfg     = {
   actv     => q{/opt/vyatta/config/active/service/dns/forwarding/},
+  cfg_dir  => q{/opt/vyatta/config},
   cnf_ext  => q{.conf},
   disabled => 0,
   dmasq_d  => q{/etc/dnsmasq.d},
@@ -946,7 +945,7 @@ sub setup {
   if ( !-d $cfg->{scrpt_d} ) {
     exec_command(
       {
-        cmd => qq{install -d -o root -g root -m 0755 directory $cfg->{scrpt_d}},
+        cmd => qq{install -d -o root -g vyattacfg -m 0755 directory $cfg->{scrpt_d}},
         exec_msg => qq{Creating $name script directory $cfg->{scrpt_d}},
         fail_msg => qq{Unable to create $name script $cfg->{scrpt_d}},
       }
@@ -956,7 +955,7 @@ sub setup {
   # Install update-dnsmasq.pl script
   exec_command(
     {
-      cmd => qq{install -o root -g root -m 0755 $cfg->{script} }
+      cmd => qq{install -o root -g vyattacfg -m 0755 $cfg->{script} }
         . qq{"$cfg->{scrpt_d}/$cfg->{script}"},
       exec_msg =>
         qq{Installing $name $cfg->{script} script to $cfg->{scrpt_d}/},
@@ -969,7 +968,7 @@ sub setup {
   exec_command(
     {
       cmd =>
-        qq{install -o root -g root -m 0755 $cfg->{tstscrpt} "$cfg->{scrpt_d}/$cfg->{tstscrpt}"},
+        qq{install -o root -g vyattacfg -m 0755 $cfg->{tstscrpt} "$cfg->{scrpt_d}/$cfg->{tstscrpt}"},
       exec_msg =>
         qq{Installing $name $cfg->{tstscrpt} script to $cfg->{scrpt_d}/},
       fail_msg =>
@@ -1009,7 +1008,7 @@ sub setup {
   # Install lib directory and Blacklist.pm module
   exec_command(
     {
-      cmd      => qq{install -o root -g root -m 0755 -d "$cfg->{lib}/"},
+      cmd      => qq{install -o root -g vyattacfg -m 0755 -d "$cfg->{lib}/"},
       exec_msg => qq{Creating $name "$cfg->{lib}/" lib directory},
       fail_msg => qq{Unable to create $name "$cfg->{lib}/" lib directory},
     }
@@ -1017,10 +1016,10 @@ sub setup {
 
   exec_command(
     {
-      cmd      => qq{cp -rf "lib/$cfg->{EdgeOS}" "$cfg->{lib}/"},
+      cmd      => qq{install -o root -g vyattacfg -m 0755 "./lib/$cfg->{EdgeOS}/DNS/Blacklist.pm" "$cfg->{lib}/$cfg->{EdgeOS}/DNS/"},
       exec_msg => qq{Installing Blacklist.pm module},
       fail_msg =>
-        qq{Unable to install Blacklist.pm module to $cfg->{lib}/$cfg->{EdgeOS}},
+        qq{Unable to install Blacklist.pm module to $cfg->{lib}/$cfg->{EdgeOS}DNS/},
     }
   );
 
@@ -1064,6 +1063,16 @@ LINE:
       msg_str => qq{Checking active configuration directory permissions},
       msg_typ => q{info},
       show    => $TRUE,
+    }
+  );
+
+  # Make sure the configuration directories have vyattacfg group set
+  exec_command(
+    {
+      cmd      => qq{chgrp -R vyattacfg "$cfg->{cfg_dir}/"},
+      exec_msg => qq{Setting $name vyattacfg group permissions for $cfg->{cfg_dir}/},
+      fail_msg =>
+        qq{Unable to set $name vyattacfg group permissions for $cfg->{cfg_dir}/},
     }
   );
 

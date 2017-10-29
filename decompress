@@ -1,4 +1,20 @@
-
+#!/usr/bin/env bash
+#
+# **** License ****
+#
+# COPYRIGHT AND LICENCE
+#
+# Copyright (C) 2017 Helmrock Consulting
+#
+# This library is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself, either Perl version 5.23.4 or,
+# at your option, any later version of Perl 5 you may have available.
+#
+# Author: Neil Beadle
+# Description: Scripts for creating dnsmasq configuration files to redirect dns
+# look ups to alternative IPs (blackholes, pixel servers etc.)
+#
+# **** End License ****
 echo
 echo "Self Extracting Installer for dnsmasq blacklist v${VERSION}"
 echo
@@ -108,7 +124,7 @@ done
 
 CDIR="$(pwd)"
 
-# Make sure script runs as root
+# Make sure script is run as ubnt admin
 if [[ ${EUID} -eq 0 ]]; then
 	echo 'This script must be run as the ubnt admin user, not root!'
 	exit 1

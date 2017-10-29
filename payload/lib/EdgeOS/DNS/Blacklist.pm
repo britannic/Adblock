@@ -1,18 +1,18 @@
 # **** License ****
 # COPYRIGHT AND LICENCE
 #
-# Copyright (C) 2016 by Neil Beadle
+# Copyright (C) 2017 Helmrock Consulting
 #
 # This library is free software; you can redistribute it and/or modify
 # it under the same terms as Perl itself, either Perl version 5.23.4 or,
 # at your option, any later version of Perl 5 you may have available.
 #
-# Author: Neil Beadle
-# Date:   March 2016
-# Description: Script for creating dnsmasq configuration files to redirect dns
-# look ups to alternative IPs (blackholes, pixel servers etc.)
-#
 # **** End License ****
+#
+# Author: Neil Beadle
+# Description: Perl Library for creating dnsmasq configuration files to
+# redirect dns look ups to alternative IPs (blackholes, pixel servers etc.)
+
 package EdgeOS::DNS::Blacklist;
 use parent qw(Exporter);    # imports and subclasses Exporter
 use base qw(Exporter);
@@ -78,7 +78,7 @@ our @EXPORT_OK = (
     write_file
     }
 );
-our $VERSION = q{3.6.4.2};
+our $VERSION = q{3.6.5};
 our $TRUE;
 *TRUE = \1;
 our $FALSE;
@@ -784,7 +784,7 @@ Neil Beadle, E<lt>blacklist@empirecreekcircle.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2016 by Neil Beadle
+Copyright (C) 2017 by Neil Beadle
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.23.4 or,
