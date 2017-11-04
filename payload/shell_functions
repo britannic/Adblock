@@ -1,0 +1,35 @@
+# Print a line of repeating characters across the current screen width
+print_line ()
+{
+	printf "\n"
+	eval printf %.0s${1:-\-} '{1..'"${2:-$(tput cols)}"\}
+	printf "\n"
+}
+
+# Pause
+pause ()
+{
+	read -p "Press the [Enter] key to continue..." hitEnterKey
+}
+
+# Display menu
+show_menu ()
+{
+	clear
+
+	print_line "%%" "${#1}"
+	printf "%s" "${1}"
+	print_line "%%" "${#1}"
+
+	shift
+
+	local options=("$@")
+	local i=0
+
+	echo
+	for ((i = 0; i < ${#options[@]}; i++))
+	do
+		printf "  %s: %s\n" ${i} "${options[${i}]}"
+	done
+	echo
+}

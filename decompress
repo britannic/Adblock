@@ -1,31 +1,18 @@
-#!/usr/bin/env bash
-#
-# **** Short Form License ****
-# COPYRIGHT AND LICENCE
-#
-# Copyright (C) 2017 by Helm Rock Consulting
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# **** End Short Form License ****
-#
+
+
 # Author: Neil Beadle
 # Description: Scripts for creating dnsmasq configuration files to redirect dns
 # look ups to alternative IPs (blackholes, pixel servers etc.)
 
-echo
-echo "Self Extracting Installer for dnsmasq blacklist v${VERSION}"
-echo
+VERSION="3.6.5"
+TITLE="dnsmasq Blacklist Integration v${VERSION}"
+OPTIONS=('(I)nstall Integration' '(R)emove Integration' '(T)est Integration' '(B)ackup Integration' '(P)urge Stale Files' '(Q)uit Install')
+
+# Make sure script is run as ubnt admin
+if [[ ${EUID} -eq 0 ]]; then
+	echo 'This script must be run as the ubnt admin user, not root!'
+	exit 1
+fi
 
 # Set up the EdgeOS environment
 source /opt/vyatta/etc/functions/script-template
@@ -60,83 +47,69 @@ system
 "
 
 install_menu () {
-	local IFS=' '
-	local PS3='Enter option number and hit return => '
-	local OPTIONS=('INSTALL' 'REMOVE' 'TEST' 'BACKUP' 'PURGE' 'QUIT')
 	shopt -s checkwinsize
+	local options=("$@")
 	local COLUMNS=$(tput cols)
+	read -p "Enter number or initial letter of menu option => " choice
 
-while true;
-do
-	echo -ne "Would you like to INSTALL, REMOVE, TEST or BACKUP dnsmasq blacklist functionality?\n\nRun PURGE to clean up stale config sessions.\n\n" | fold -s -w ${COLUMNS}
-	select CHOICE in ${OPTIONS[@]}; do
-		case ${REPLY} in
-			1)		clear console
-					check existsActive service dns forwarding
-					if [[ $? == 0 ]]
-					then
+	case ${choice} in
+		0|I|i)		clear console
+				check existsActive service dns forwarding
+				if [[ $? == 0 ]]
+				then
+					echo "Installing ${TITLE}"
 					./setup
 					if [[ $? == 0 ]]
 					then
 						sudo ./blacklist.t
 					fi
-					break
-					else
-						tput setaf 1
-						echo 'CANNOT PROCEED: [service dns forwarding] must be configured first!'
-						tput setaf 7
-						echo 'Sample dns forwarding (dnsmasq) configuration:'
-						tput setaf 3
-						echo -ne ${DMASQ_MSG}
-						tput setaf 7
-					fi
-					return 1
-					;;
-			2)		clear console
-					if /opt/vyatta/bin/yesno -n "Do you want to completely remove dnsmasq blacklist v$VERSION? [y/N]: "
-					then
-						./remove
-						break
-					fi
-					break
-					;;
-			3)		clear console
-					sudo ./blacklist.t
-					break
-					;;
-			4)		check existsActive service dns forwarding blacklist
-					if [[ $? == 0 ]]
-					then
-						RESULT=$(run show configuration commands | grep blacklist > /config/user-data/blacklist.cmds)
-						tput setaf 2
-						echo -ne "\ndnsmasq blacklist v$VERSION configuration backed up to /config/user-data/blacklist.cmds\n\n"
-						tput setaf 7
-						echo -ne "To restore, run:\n\tconfigure\n\tsource /config/user-data/blacklist.cmds\n\tcommit\n\tsave\n\texit\n\n" | fold -s -w ${COLUMNS}
-					else
-						tput setaf 1
-						echo -ne "\ndnsmasq blacklist isn't configured, nothing to backup!\n\n"
-						tput setaf 7
-					fi
-					break
-					;;
-			5)		clear console
-					sudo ./ubnt-cln-cfg-orphans.sh
-					break
-					;;
-			6|*)	return 0
-					;;
-		esac
-	done
-done
+				else
+					tput setaf 1
+					echo 'CANNOT PROCEED: [service dns forwarding] must be configured first!'
+					tput setaf 7
+					echo 'Sample dns forwarding (dnsmasq) configuration:'
+					tput setaf 3
+					echo -ne ${DMASQ_MSG}
+					tput setaf 7
+				fi
+				pause
+				;;
+		1|R|r)		clear console
+				if /opt/vyatta/bin/yesno -n "Do you want to completely remove ${TITLE}? [y/N]: "
+				then
+					./remove
+					pause
+				fi
+				;;
+		2|T|t)		clear console
+				sudo ./blacklist.t
+				pause
+				;;
+		3|B|b)		check existsActive service dns forwarding blacklist
+				if [[ $? == 0 ]]
+				then
+					RESULT=$(run show configuration commands | grep blacklist > /config/user-data/blacklist.cmds)
+					tput setaf 2
+					echo -ne "\n${TITLE} configuration backed up to /config/user-data/blacklist.cmds\n\n"
+					tput setaf 7
+					echo -ne "To restore, run:\n\tconfigure\n\tsource /config/user-data/blacklist.cmds\n\tcommit\n\tsave\n\texit\n\n" | fold -s -w ${COLUMNS}
+				else
+					tput setaf 1
+					echo -ne "\n${TITLE} isn't configured, nothing to backup!\n\n"
+					tput setaf 7
+				fi
+				pause
+				;;
+		4|P|p)		clear console
+				sudo ./ubnt-cln-cfg-orphans.sh
+				pause
+				;;
+		5|*)	break
+				;;
+	esac
 }
 
 CDIR="$(pwd)"
-
-# Make sure script is run as ubnt admin
-if [[ ${EUID} -eq 0 ]]; then
-	echo 'This script must be run as the ubnt admin user, not root!'
-	exit 1
-fi
 
 export TMPDIR=$(mktemp -d /tmp/selfextract.XXXXXX)
 
@@ -146,7 +119,11 @@ tail -n+${ARCHIVE} $0 | tar xz -C "${TMPDIR}"
 
 cd "${TMPDIR}"
 
-install_menu
+while true
+do
+	show_menu "  Install ${TITLE}  " "${OPTIONS[@]}"
+	install_menu "${OPTIONS[@]}"
+done
 
 cd "${CDIR}"
 rm -rf "${TMPDIR}"

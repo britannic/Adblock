@@ -32,16 +32,20 @@ BLACKLIST="${NAME}.${VERSION}."
 INSTALL="install_${NAME}.v${VERSION}"
 PAYLOAD='payload'
 LIB="~/Projects/AdBlock/payload/lib/EdgeOS/DNS/Blacklist.pm"
-SEDCMD='s/Copyright (C) 20../Copyright (C) '$(date +"%Y")'/g'
 SED='gsed -i.bak '
+SEDCMD='s/Copyright (C) 20../Copyright (C) '$(date +"%Y")'/g'
+SEDVER='s/^VERSION=.*$/VERSION=\"'${VERSION}'\"/g'
 UPDATE_RDME_VER='s/install_dnsmasq_blklist\.v\([0-9]*\.[0-9]*\.[0-9]*\)\(.*$\)/install_dnsmasq_blklist.v'${VERSION}'\2/g'
 UPDATE_CPYRT=(LICENSE decompress README.md)
 
-if [[ -e "${0##*/}" ]]; then
+if [[ -e "${0##*/}" ]]
+then
 	BASEDIR="$(pwd)"
+	[[ -f ${PAYLOAD}.tgz ]] && rm ${PAYLOAD}.tgz
 	[[ -f ${BLACKLIST}setup.tgz ]] && rm ${BLACKLIST}setup.tgz
 # Update README.md instructions with current version
 	eval ${SED} \'${UPDATE_RDME_VER}\' README.md
+	eval ${SED} \'${SEDVER}\' decompress
 	cd ${PAYLOAD}
 	cp setup remove
 
@@ -60,22 +64,24 @@ if [[ -e "${0##*/}" ]]; then
 			# Update Copyright to current year
 			eval ${SED} \'${SEDCMD}\' ${i}
 		done
-		cat decompress ${PAYLOAD}.tgz >> ${INSTALL}
+
+		echo "#!/usr/bin/env bash" > ${INSTALL}
+		cat LICENSE ${PAYLOAD}/shell_functions decompress ${PAYLOAD}.tgz >> ${INSTALL}
+
 	else
 		echo "${PAYLOAD}.tgz does not exist"
 		exit 1
 	fi
 
 	chmod 0755 ${INSTALL}
-	tar zcf ${INSTALL}.tgz ${INSTALL}
 	echo "${INSTALL} created"
+
+	[[ -f ${INSTALL}.tgz ]] && rm ${INSTALL}.tgz
+	tar zcf ${INSTALL}.tgz ${INSTALL}
 	[[ -d "${DROPBOX}/" ]] && install -m 0755 ${INSTALL}.tgz "${DROPBOX}/"
-	tar -zcf ../${BLACKLIST}setup.tgz --exclude='._*' --exclude='.svn' --exclude='.DS_Store' --exclude='*.bak' --exclude='*~' "${BASEDIR}"/*
-	mv ../${BLACKLIST}setup.tgz "${BASEDIR}"/
 
 # scp the build to our test router for debugging
-	[[ ${1} ]] && /usr/bin/scp -i ~/.ssh/jeff_id_rsa "${BASEDIR}"/${INSTALL} ${1}@unms-server:/tmp/${INSTALL}
-
+	[[ ${1} ]] && /usr/bin/scp "${BASEDIR}"/${INSTALL} ${1}@unms-server.ashcreek.home:/tmp/${INSTALL}
 else
 	echo "$(basename $0) must be run in the directory where it is located."
 fi

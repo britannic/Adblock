@@ -785,7 +785,7 @@ http://community.ubnt.com/t5/EdgeMAX/CLI-Integrated-dnsmasq-Adblocking-amp-Black
 
 =head1 AUTHOR
 
-Neil Beadle, E<lt>blacklist@empirecreekcircle.comE<gt>
+Neil Beadle
 
 =head1 COPYRIGHT AND LICENSE
 
