@@ -126,7 +126,7 @@ sub delete_file {
   if ( -f $input->{file} ) {
     log_msg(
       {
-        msg_typ => q{info},
+        msg_typ => q{INFO},
         msg_str => qq{Deleting file $input->{file}},
       }
     );
@@ -136,7 +136,7 @@ sub delete_file {
   if ( -f $input->{file} ) {
     log_msg(
       {
-        msg_typ => q{warning},
+        msg_typ => q{WARNING},
         msg_str => qq{Unable to delete $input->{file}},
       }
     );
@@ -220,7 +220,7 @@ sub get_cfg_actv {
     log_msg(
       {
         show    => $input->{show},
-        msg_typ => q{error},
+        msg_typ => q{ERROR},
         msg_str =>
           q{[service dns forwarding blacklist is not configured], exiting!},
       }
@@ -234,7 +234,7 @@ sub get_cfg_actv {
     log_msg(
       {
         show    => $input->{show},
-        msg_typ => q{error},
+        msg_typ => q{ERROR},
         msg_str => q{At least one domain or host online source/file }
           . q{must be configured},
       }
@@ -280,7 +280,7 @@ sub get_cfg_file {
     log_msg(
       {
         show    => $input->{show},
-        msg_typ => q{error},
+        msg_typ => q{ERROR},
         msg_str =>
           q{[service dns forwarding blacklist] isn't configured, exiting!},
       }
@@ -320,7 +320,7 @@ sub get_file {
   my $input = shift;
   if ( -f $input->{file} ) {
     open my $CF, q{<}, $input->{file}
-      or die qq{error: Unable to open $input->{file}: $!};
+      or die qq{[ERROR]: Unable to open $input->{file}: $!};
     chomp( @{ $input->{data} } = <$CF> );
     close $CF;
   }
@@ -551,12 +551,12 @@ sub is_version {
 sub log_msg {
   my $input   = shift;
   my $log_msg = {
-    alert    => LOG_ALERT,
-    critical => LOG_CRIT,
-    debug    => LOG_DEBUG,
-    error    => LOG_ERR,
-    info     => LOG_NOTICE,
-    warning  => LOG_WARNING,
+    ALERT    => LOG_ALERT,
+    CRITICAL => LOG_CRIT,
+    DEBUG    => LOG_DEBUG,
+    ERROR    => LOG_ERR,
+    INFO     => LOG_NOTICE,
+    WARNING  => LOG_WARNING,
   };
 
   return unless ( length $input->{msg_typ} . $input->{msg_str} > 2 );
@@ -565,18 +565,18 @@ sub log_msg {
 
   syslog(
     $log_msg->{ $input->{msg_typ} },
-    qq{$input->{msg_typ}: } . $input->{msg_str}
+    qq{[$input->{msg_typ}]: } . $input->{msg_str}
       =~ s/\e[[][?]{0,1}\d+(?>(;\d+)*)[lm]//gr
   );
 
-  if ( $input->{msg_typ} eq q{info} ) {
-    print $c->{off}, qq{\r}, pad_str(qq{$input->{msg_typ}: $input->{msg_str}}),
+  if ( $input->{msg_typ} eq q{INFO} ) {
+    print $c->{off}, qq{\r}, pad_str(qq{[$c->{grn}$input->{msg_typ}$c->{clr}]: $input->{msg_str}}),
       $input->{eof}
       if $input->{show};
   }
   else {
-    print STDERR $c->{off}, $c->{red}, qq{\r},
-      pad_str(qq{$input->{msg_typ}: $input->{msg_str}}), $c->{clr},
+    print STDERR $c->{off}, qq{\r},
+      pad_str(qq{[$c->{red}$input->{msg_typ}$c->{clr}]: $input->{msg_str}}),
       $input->{eof}
       if $input->{show};
   }
@@ -680,7 +680,7 @@ LINE:
   {
     log_msg(
       {
-        msg_typ => q{info},
+        msg_typ => q{INFO},
         msg_str => sprintf(
           qq{$c->{off}%s: $c->{grn}%s$c->{clr} %s processed, ($c->{red}%s$c->{clr} discarded) from $c->{mag}%s$c->{clr} lines\r},
           $input->{src},
@@ -723,7 +723,7 @@ sub write_file {
   open my $FH, q{>}, $input->{file} or return;
   log_msg(
     {
-      msg_typ => q{info},
+      msg_typ => q{INFO},
       msg_str => sprintf( q{Saving %s}, basename( $input->{file} ) ),
     }
   );
