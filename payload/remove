@@ -188,7 +188,7 @@ sub exec_command {
         cols    => $cols,
         eof     => qq{\n},
         msg_str => $input->{fail_msg} . qq{\n$output\n},
-        msg_typ => q{error},
+        msg_typ => q{ERROR},
         show    => $TRUE,
       }
     );
@@ -255,7 +255,7 @@ sub exec_shell {
                 cols    => $cols,
                 eof     => qq{\n},
                 msg_str => $cli_out,
-                msg_typ => q{error},
+                msg_typ => q{ERROR},
                 show    => $TRUE,
               }
             );
@@ -274,7 +274,7 @@ sub exec_shell {
                 cols    => $cols,
                 eof     => qq{\n},
                 msg_str => $cli_err,
-                msg_typ => q{error},
+                msg_typ => q{ERROR},
                 show    => $TRUE,
               }
             );
@@ -374,7 +374,7 @@ sub get_blacklist {
               {
                 cols    => $cols,
                 show    => $TRUE,
-                msg_typ => q{error},
+                msg_typ => q{ERROR},
                 msg_str => sprintf q{URL: %s incorrectly formatted} => $area,
                 $host,
               }
@@ -667,7 +667,7 @@ sub main {
                 cols    => $cols,
                 eof     => qq{\n},
                 msg_str => qq{$prg->{fail}->{$key} failed!},
-                msg_typ => q{error},
+                msg_typ => q{ERROR},
                 show    => $TRUE,
               }
             );
@@ -679,7 +679,7 @@ sub main {
               msg_str => qq{$name version $VERSION installation failed!}
                 . qq{\nReview /var/log/messages\n}
                 . qq{$prg->{errors}/$prg->{errors} calls failed},
-              msg_typ => q{error},
+              msg_typ => q{ERROR},
               show    => $TRUE,
             }
           );
@@ -694,7 +694,7 @@ sub main {
             eof  => qq{\n},
             msg_str =>
               qq{Edgemax $edgeOS->{version} is not supported, upgrade!},
-            msg_typ => q{error},
+            msg_typ => q{ERROR},
             show    => $TRUE,
           }
         );
@@ -721,7 +721,7 @@ sub main {
               cols    => $cols,
               eof     => qq{\n},
               msg_str => qq{$prg->{fail}->{$key} failed!},
-              msg_typ => q{error},
+              msg_typ => q{ERROR},
               show    => $TRUE,
             }
           );
@@ -733,7 +733,7 @@ sub main {
             msg_str => qq{$name version $VERSION removal failed!}
               . qq{\nReview /var/log/messages\n}
               . qq{$prg->{errors}/$prg->{errors} calls failed},
-            msg_typ => q{error},
+            msg_typ => q{ERROR},
             show    => $TRUE,
           }
         );
@@ -840,7 +840,7 @@ sub remove {
           cols    => $cols,
           eof     => qq{\n},
           msg_str => qq{Unable to remove $name configuration templates},
-          msg_typ => q{error},
+          msg_typ => q{ERROR},
           show    => $TRUE,
         }
       );
@@ -864,7 +864,7 @@ sub remove {
           cols    => $cols,
           eof     => qq{\n},
           msg_str => qq{Unable to remove $name perl library},
-          msg_typ => q{error},
+          msg_typ => q{ERROR},
           show    => $TRUE,
         }
       );
@@ -888,7 +888,7 @@ sub remove {
           cols    => $cols,
           eof     => qq{\n},
           msg_str => qq{Unable to remove $name perl library},
-          msg_typ => q{error},
+          msg_typ => q{ERROR},
           show    => $TRUE,
         }
       );
