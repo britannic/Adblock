@@ -29,7 +29,8 @@ show_menu ()
 	echo
 	for ((i = 0; i < ${#options[@]}; i++))
 	do
-		printf "  %s: %s\n" ${i} "${options[${i}]}"
+		printf "   %s: %s\n" ${i} "${options[${i}]}"
 	done
 	echo
 }
+

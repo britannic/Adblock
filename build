@@ -30,22 +30,33 @@ NAME='dnsmasq_blklist'
 DROPBOX="~/Dropbox/EdgeMax"
 BLACKLIST="${NAME}.${VERSION}."
 INSTALL="install_${NAME}.v${VERSION}"
-PAYLOAD='payload'
 LIB="~/Projects/AdBlock/payload/lib/EdgeOS/DNS/Blacklist.pm"
+PAYLOAD='payload'
+POSTINSTALL="Install_${NAME}.v${VERSION}"
 SED='gsed -i.bak '
 SEDCMD='s/Copyright (C) 20../Copyright (C) '$(date +"%Y")'/g'
 SEDVER='s/^VERSION=.*$/VERSION=\"'${VERSION}'\"/g'
-UPDATE_RDME_VER='s/install_dnsmasq_blklist\.v\([0-9]*\.[0-9]*\.[0-9]*\)\(.*$\)/install_dnsmasq_blklist.v'${VERSION}'\2/g'
 UPDATE_CPYRT=(LICENSE decompress README.md)
+UPDATE_RDME_VER='s/install_dnsmasq_blklist\.v\([0-9]*\.[0-9]*\.[0-9]*\)\(.*$\)/install_dnsmasq_blklist.v'${VERSION}'\2/g'
 
 if [[ -e "${0##*/}" ]]
 then
 	BASEDIR="$(pwd)"
 	[[ -f ${PAYLOAD}.tgz ]] && rm ${PAYLOAD}.tgz
 	[[ -f ${BLACKLIST}setup.tgz ]] && rm ${BLACKLIST}setup.tgz
+
+	cd ${PAYLOAD}
+	[[ -f ${POSTINSTALL} ]] && rm ${POSTINSTALL}
+	tar zcf ../${PAYLOAD}.tgz --exclude='._*' --exclude='.svn' --exclude='.DS_Store' --exclude='*.bak' --exclude='*~' ./*
+	cd ..
+
 # Update README.md instructions with current version
 	eval ${SED} \'${UPDATE_RDME_VER}\' README.md
-	eval ${SED} \'${SEDVER}\' decompress
+	eval ${SED} \'${SEDVER}\' decompress decompress_install_Adblock
+
+	echo "#!/usr/bin/env bash" > "${PAYLOAD}/${POSTINSTALL}"
+	cat LICENSE decompress_install_Adblock ${PAYLOAD}.tgz >> "${PAYLOAD}/${POSTINSTALL}"
+
 	cd ${PAYLOAD}
 	cp setup remove
 

@@ -62,7 +62,7 @@ use EdgeOS::DNS::Blacklist (
 
 my ( $blacklist_removed, $cfg_file );
 my $max_scan = 10;
-my $version = q{1.6};
+my $version  = q{1.6};
 
 ########## Run main ###########
 exit 0 if &main();
@@ -279,9 +279,7 @@ sub get_tests {
   else {
     $blacklist_removed = $TRUE;
     print pad_str(
-      qq{@{[pinwheel()]} Blacklist is removed - },
-      q{testing to check its cleanly removed...}
-    );
+      qq{@{[pinwheel()]} Testing Blacklist is cleanly removed...} );
 
     # Check for stray files
     $input->{cfg}->{strays}
@@ -346,7 +344,7 @@ sub get_tests {
   my $re_fqdn = qr{address=[/][.]{0,1}(.*)[/].*}o;
   for my $area (@areas) {
 
-    print pad_str(qq{@{[pinwheel()]} Adding tests for $area content...});
+    print pad_str(qq{@{[pinwheel()]} Checking $area entries...});
 
     my %content;
     my @files = @{ get_files( { cfg => $input->{cfg}, area => $area } ) };
@@ -371,9 +369,7 @@ sub get_tests {
       for my $f_ref (@files) {
         my ( $source, $file ) = @{$f_ref};
         print pad_str(
-          qq{@{[pinwheel()]} Deep scanning data in $area files },
-          q{for exclusion tests...}
-        );
+          qq{@{[pinwheel()]} Checking data in $area files exclusions...} );
 
         if ( -f $file ) {
           %content
@@ -388,9 +384,7 @@ sub get_tests {
               // $ip;
             my @keys = ( qq{address=/.$host/$ip}, qq{address=/$host/$ip} );
             print pad_str(
-              qq{@{[pinwheel()]} Adding global $area $host },
-              q{exclusion tests...}
-            );
+              qq{@{[pinwheel()]} Testing global $area $host exclusions...} );
 
             $tests->{ $ikey++ } = {
               comment =>
@@ -403,7 +397,7 @@ sub get_tests {
             };
           }
         }
-      my $scan = $max_scan;
+        my $scan = $max_scan;
       HOST:
         for my $host ( keys %content ) {
           $host =~ s/$re_fqdn/$1/ms;
@@ -414,9 +408,9 @@ sub get_tests {
           my $IF  = colored( "IF",  'bold underline yellow' );
 
           $tests->{ $ikey++ } = {
-            comment => qq{Checking $host is redirected by dnsmasq to $ip},
+            comment => qq{Testing dnsmasq redirects $host to $ip},
             diag =>
-              qq{dnsmasq replied with $host = $resolved_ip, should be $ip! \n}
+              qq{dnsmasq answers $host = $resolved_ip, should be $ip! \n}
               . $c->{grn}
               . qq{Ignore this error, }
               . qq {$IF }
@@ -437,8 +431,7 @@ sub get_tests {
 
         for my $host ( sort keys %{ $input->{cfg}->{$area}->{exclude} } ) {
           my @keys = ( qq{address=/.$host/$ip}, qq{address=/$host/$ip} );
-          print pad_str(
-            qq{@{[pinwheel()]} Adding tests for $area $host exclusion...});
+          print pad_str(qq{@{[pinwheel()]} Testing $area $host exclusions...});
 
           $tests->{ $ikey++ } = {
             comment =>
@@ -451,8 +444,7 @@ sub get_tests {
           };
         }
 
-        print pad_str(
-          qq{@{[pinwheel()]} Deep scanning data for $area IP tests...});
+        print pad_str(qq{@{[pinwheel()]} Checking $area IP data...});
 
         my $re        = qr{(?:address=[/][.]{0,1}.*[/])(?<IP>.*)};
         my %found_ips = map {
@@ -463,10 +455,10 @@ sub get_tests {
         delete $found_ips{tmpkey};
 
         for my $found_ip ( sort keys %found_ips ) {
-          print pad_str(qq{@{[pinwheel()]} Adding tests for correct IP...});
+          print pad_str(qq{@{[pinwheel()]} Testing for correct IP...});
           $tests->{ $ikey++ } = {
-            comment => qq{IP address $found_ip found in @{[basename($file)]}}
-              . qq{ matches configured $ip},
+            comment =>
+              qq{$found_ip in @{[basename($file)]} matches configured $ip},
             diag =>
               qq{IP address $found_ip found in @{[basename($file)]}}
               . qq{ doesn't match configured $ip!},
@@ -491,8 +483,7 @@ sub get_tests {
             $ip = $input->{cfg}->{$area}->{dns_redirect_ip} // $ip;
             my @keys = ( qq{address=/.$host/$ip}, qq{address=/$host/$ip} );
 
-            print pad_str(
-              qq{@{[pinwheel()]} Adding tests for blacklisted $host...});
+            print pad_str(qq{@{[pinwheel()]} Testing for blacklisted $host...});
             $tests->{ $ikey++ } = {
               comment =>
                 qq{Checking "$area include" $host is in @{[basename($file)]}},
@@ -533,39 +524,6 @@ sub get_tests {
     }
   }
 
-  # HOST:
-  #   for my $area (@areas) {
-  #     my $ip = $input->{cfg}->{$area}->{dns_redirect_ip};
-  #     print pad_str(
-  #       qq{@{[pinwheel()]} Scanning $area for DNS redirection tests...});
-  #
-  #     for my $host ( sort keys %{ $input->{cfg}->{$area}->{blklst} } ) {
-  #       $host = q{www.} . $host if $area eq q{domains};
-  #       my $resolved_ip = get_ip($host) or next HOST;
-  #       print pad_str(qq{@{[pinwheel()]} Resolved $host to $resolved_ip});
-  #       my $AND = colored( "AND", 'bold underline yellow' );
-  #       my $IF  = colored( "IF",  'bold underline yellow' );
-  #
-  #       $tests->{ $ikey++ } = {
-  #         comment => qq{Checking $host is redirected by dnsmasq to $ip},
-  #         diag =>
-  #           qq{dnsmasq replied with $host = $resolved_ip, should be $ip! \n}
-  #           . $c->{grn}
-  #           . qq{Ignore this error, }
-  #           . qq {$IF }
-  #           . $c->{grn}
-  #           . qq{your router doesn't resolve DNS locally.\n}
-  #           . qq{$AND }
-  #           . $c->{grn}
-  #           . qq{your client devices are getting $host = $ip.},
-  #         lval   => $resolved_ip,
-  #         op     => q{eq},
-  #         result => $TRUE,
-  #         rval   => $ip,
-  #         test   => q{cmp_ok},
-  #       };
-  #     }
-  #   }
   say q{};
   return $tests;
 }

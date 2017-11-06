@@ -1,0 +1,38 @@
+#
+# Author: Neil Beadle
+# Description: Scripts for creating dnsmasq configuration files to redirect dns
+# look ups to alternative IPs (blackholes, pixel servers etc.)
+
+VERSION="3.6.5"
+
+TITLE="dnsmasq Blacklist Integration v${VERSION}"
+
+CDIR=$(pwd)
+
+# Make sure script is run as root
+if [[ ${EUID} -ne 0 ]]
+then
+	echo 'This script must be run as sudo/root!'
+	exit 1
+fi
+
+export TMPDIR=$(mktemp -d /tmp/selfextract.XXXXXX)
+
+ARCHIVE=`awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }' $0`
+
+tail -n+${ARCHIVE} $0 | tar xz -C ${TMPDIR}
+
+cd "${TMPDIR}"
+
+./setup
+
+cd ${CDIR}
+rm -rf ${TMPDIR}
+
+# Fix group since we have to run as root from /config/scripts/post-config.d/
+# otherwise configure won't succeed when run as admin
+chown -R root:vyattacfg /opt/vyatta/config/
+
+exit 0
+
+__ARCHIVE_BELOW__

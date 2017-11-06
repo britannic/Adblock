@@ -29,6 +29,7 @@ use lib q{/opt/vyatta/share/perl5/};
 use File::Basename;
 use Getopt::Long;
 use HTTP::Tiny;
+use Term::Cap;
 use POSIX qw{geteuid getegid getgroups};
 use Socket (
   qw{
@@ -59,8 +60,11 @@ our @EXPORT_OK = (
     $c
     $FALSE
     $spoke
+    $tcap
     $TRUE
     $VERSION
+    clear_end
+    clear_screen
     delete_file
     get_cfg_actv
     get_cfg_file
@@ -70,16 +74,21 @@ our @EXPORT_OK = (
     get_ip
     get_url
     get_user
+    gotoxy
     is_admin
     is_build
     is_configure
     is_version
     log_msg
+    $maxcol
+    $maxrow
     pad_str
     pinwheel
     popx
     process_data
     set_dev_grp
+    term_end
+    term_init
     write_file
     }
 );
@@ -107,16 +116,48 @@ our $c = {
 };
 our $spoke;
 our @EXPORT;
+our $tcap;
+our ( $maxrow, $maxcol ) = ( $tcap->{_li} - 1, $tcap->{_co} - 1 );
+
+# our $maxrow;
+
+# Initialize Term::Cap.
+sub term_init {
+  $| = 1;                                         # Turn on buffer auto flushing
+  $tcap = Term::Cap->Tgetent( { TERM => undef } );
+  $tcap->Trequire(qw(cl cm cd));
+  ( $maxrow, $maxcol ) = ( $tcap->{_li} - 1, $tcap->{_co} - 1 );
+}
+
+# clear_screen clears the entire screen
+sub clear_screen { $tcap->Tputs( 'cl', 1, *STDOUT ) }
+
+# clear_end clears to the end of the screen.
+sub clear_end { $tcap->Tputs( 'cd', 1, *STDOUT ) }
+
+# Move the cursor to a specified location.
+sub gotoxy {
+  my ( $x, $y ) = @_;
+  $tcap->Tgoto( 'cm', $x, $y, *STDOUT );
+}
+
+# Clear the screen from x to y coordinates.
+sub term_end {
+  my ( $x, $y ) = @_;
+  gotoxy( $x, $y );
+  clear_end();
+}
 
 # Pad a string to max terminal columns
 sub pad_str {
-  my $str    = shift // q{};
-  my $tmp    = $str =~ s/.*[^[:print:]]+//r;
-  my $spaces = q{ } x ( get_cols() - length $tmp );
+  my $str = shift // q{};
+  my $spaces
+    = q{ }
+    x ( get_cols() - length( $str =~ s/\e[[][?]{0,1}\d+(?>(;\d+)*)[lm]//gr ) )
+    // q{};
 
   return if not $spaces;
-
-  return $str . $spaces;
+  return sprintf( "%s%s", $str, $spaces );
 }
 
 # Does just what it says
@@ -540,8 +581,8 @@ sub is_version {
 
 #   if ( $edgeOS =~ s{^Version:\s*(?<VERSION>.*)$}{$+{VERSION}}xms ) {
   if ( @ver = split /\./ => $edgeOS ) {
-    $version = join "." => @ver[ 0..$#ver-3];
-    $build = $ver[$#ver-2];
+    $version = join "." => @ver[ 0 .. $#ver - 3 ];
+    $build = $ver[ $#ver - 2 ];
   }
 
   return { version => $version, build => $build };
@@ -549,7 +590,9 @@ sub is_version {
 
 # Log and print (if $show = $TRUE)
 sub log_msg {
+  $|++;
   my $input   = shift;
+  my $len     = ( length $input->{msg_typ} . $input->{msg_str} );
   my $log_msg = {
     ALERT    => LOG_ALERT,
     CRITICAL => LOG_CRIT,
@@ -559,7 +602,7 @@ sub log_msg {
     WARNING  => LOG_WARNING,
   };
 
-  return unless ( length $input->{msg_typ} . $input->{msg_str} > 2 );
+  return unless ( $len > 2 );
 
   $input->{eof} //= q{};
 
@@ -570,7 +613,8 @@ sub log_msg {
   );
 
   if ( $input->{msg_typ} eq q{INFO} ) {
-    print $c->{off}, qq{\r}, pad_str(qq{[$c->{grn}$input->{msg_typ}$c->{clr}]: $input->{msg_str}}),
+    print $c->{off}, qq{\r},
+      pad_str(qq{[$c->{grn}$input->{msg_typ}$c->{clr}]: $input->{msg_str}}),
       $input->{eof}
       if $input->{show};
   }
@@ -581,6 +625,7 @@ sub log_msg {
       if $input->{show};
   }
 
+  $|--;
   return $TRUE;
 }
 

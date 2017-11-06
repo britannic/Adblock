@@ -378,7 +378,7 @@ sub get_blacklist {
                 msg_str => sprintf q{URL: %s incorrectly formatted} => $area,
                 $host,
               }
-              );
+            );
           }
           $host = $uri->host;
           log_msg(
@@ -626,16 +626,6 @@ sub main {
   my $log_name = qq{$program};
   openlog( $program, q{}, LOG_DAEMON );
 
-  log_msg(
-    {
-      cols    => $cols,
-      eof     => qq{\n},
-      msg_str => qq{---+++ $name $program v$VERSION +++--- },
-      msg_typ => q{INFO},
-      show    => $TRUE,
-    }
-  );
-
   for ($program) {
     when (m/setup/) {
       if ( is_build() ) {
@@ -644,7 +634,7 @@ sub main {
             cols => $cols,
             eof  => qq{\n},
             msg_str =>
-              qq{Installing $name v$VERSION blocking dnsmasq support},
+              qq{Installing $name $program v$VERSION support},
             msg_typ => q{INFO},
             show    => $TRUE,
           }
@@ -928,8 +918,7 @@ sub setup {
         cols => $cols,
         eof  => qq{\n},
         msg_str =>
-          q{Removing stale blacklist files from directory: }
-          . qq{$cfg->{dmasq_d}/},
+          q{Removing stale blacklist files from $cfg->{dmasq_d}/},
         msg_typ => q{INFO},
         show    => $TRUE,
       }
@@ -947,27 +936,20 @@ sub setup {
   }
 
   # Create script directory in upgrade persistent /config/scripts
-  if ( !-d $cfg->{scrpt_d} ) {
+  if ( !-f qq{$cfg->{scrpt_d}/$cfg->{scrpt_d}/$cfg->{script}} ) {
+
+    # Install update-dnsmasq.pl script
     exec_command(
       {
-        cmd => qq{install -d -o root -g vyattacfg -m 0755 directory $cfg->{scrpt_d}},
-        exec_msg => qq{Creating $name script directory $cfg->{scrpt_d}},
-        fail_msg => qq{Unable to create $name script $cfg->{scrpt_d}},
+        cmd => qq{install -D -o root -g vyattacfg -m 0755 $cfg->{script} }
+          . qq{"$cfg->{scrpt_d}/$cfg->{script}"},
+        exec_msg =>
+          qq{Installing $name $cfg->{script} to $cfg->{scrpt_d}/},
+        fail_msg =>
+          qq{Unable to install $name $cfg->{script} to $cfg->{scrpt_d}/},
       }
     );
   }
-
-  # Install update-dnsmasq.pl script
-  exec_command(
-    {
-      cmd => qq{install -o root -g vyattacfg -m 0755 $cfg->{script} }
-        . qq{"$cfg->{scrpt_d}/$cfg->{script}"},
-      exec_msg =>
-        qq{Installing $name $cfg->{script} script to $cfg->{scrpt_d}/},
-      fail_msg =>
-        qq{Unable to install $name $cfg->{script} script to $cfg->{scrpt_d}/},
-    }
-  );
 
   # Install blacklist.t test script
   exec_command(
@@ -975,9 +957,9 @@ sub setup {
       cmd =>
         qq{install -o root -g vyattacfg -m 0755 $cfg->{tstscrpt} "$cfg->{scrpt_d}/$cfg->{tstscrpt}"},
       exec_msg =>
-        qq{Installing $name $cfg->{tstscrpt} script to $cfg->{scrpt_d}/},
+        qq{Installing $name $cfg->{tstscrpt} to $cfg->{scrpt_d}/},
       fail_msg =>
-        qq{Unable to install $name $cfg->{tstscrpt} script to $cfg->{scrpt_d}/},
+        qq{Unable to install $name $cfg->{tstscrpt} to $cfg->{scrpt_d}/},
     }
   );
 
@@ -1010,21 +992,13 @@ sub setup {
     )
     or die qq{Unable to repair active configuration directory permissions!};
 
-  # Install lib directory and Blacklist.pm module
   exec_command(
     {
-      cmd      => qq{install -o root -g vyattacfg -m 0755 -d "$cfg->{lib}/"},
-      exec_msg => qq{Creating $name "$cfg->{lib}/" lib directory},
-      fail_msg => qq{Unable to create $name "$cfg->{lib}/" lib directory},
-    }
-  );
-
-  exec_command(
-    {
-      cmd      => qq{install -o root -g vyattacfg -m 0755 "./lib/$cfg->{EdgeOS}/DNS/Blacklist.pm" "$cfg->{lib}/$cfg->{EdgeOS}/DNS/"},
+      cmd =>
+        qq{install -Dv -o root -g vyattacfg -m 0755 "./lib/$cfg->{EdgeOS}/DNS/Blacklist.pm" "$cfg->{lib}/$cfg->{EdgeOS}/DNS/Blacklist.pm"},
       exec_msg => qq{Installing Blacklist.pm module},
       fail_msg =>
-        qq{Unable to install Blacklist.pm module to $cfg->{lib}/$cfg->{EdgeOS}DNS/},
+        qq{Unable to install Blacklist.pm module to $cfg->{lib}/$cfg->{EdgeOS}/DNS/},
     }
   );
 
@@ -1072,14 +1046,13 @@ LINE:
   );
 
   # Make sure the configuration directories have vyattacfg group set
-  exec_command(
+  set_dev_grp(
     {
-      cmd      => qq{chgrp -R vyattacfg "$cfg->{cfg_dir}/"},
-      exec_msg => qq{Setting $name vyattacfg group permissions for $cfg->{cfg_dir}/},
-      fail_msg =>
-        qq{Unable to set $name vyattacfg group permissions for $cfg->{cfg_dir}/},
+      dir_handle => qq{$cfg->{cfg_dir}/}, dir_grp     => $cfg->{group},
+      grps       => get_user(             { attribute => q{grps} } )
     }
-  );
+    )
+    or die qq{Unable to repair active configuration directory permissions!};
 
   # Run configure and execute the commands
   exec_shell( { commands => \@commands } )
