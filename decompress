@@ -60,6 +60,10 @@ install_menu () {
 					if [[ $? == 0 ]]
 					then
 						sudo ./blacklist.t
+					else
+						tput setaf 1
+						echo "setup returned an error, skipping ${TITLE} tests..."
+						tput setaf 7
 					fi
 				else
 					tput setaf 1
@@ -103,7 +107,7 @@ install_menu () {
 				sudo ./ubnt-cln-cfg-orphans.sh
 				pause
 				;;
-		5|*)	break
+		5|Q|q)	break
 				;;
 	esac
 }

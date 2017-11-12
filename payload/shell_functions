@@ -15,21 +15,33 @@ pause ()
 # Display menu
 show_menu ()
 {
+	local columns=$(tput cols)
+	offset=$(( (${#1} + ${columns}) / 2))
 	clear
 
-	print_line "%%" "${#1}"
-	printf "%s" "${1}"
-	print_line "%%" "${#1}"
+	print_line "%%" "${columns}"
+	# Center title string
+	printf "%*s" $offset "${1}"
+	print_line "%%" "${columns}"
 
 	shift
 
 	local options=("$@")
 	local i=0
 
+# Find longest string
+	max=${#options[0]}
+	for ((i = 0; i < ${#options[@]}; i++))
+	do
+		(("${#options[${i}]}" > ${max})) && max="${#options[${i}]}"
+	done
+
+	offset=$(( ((${columns}) / 2) - ${max}))
+
 	echo
 	for ((i = 0; i < ${#options[@]}; i++))
 	do
-		printf "   %s: %s\n" ${i} "${options[${i}]}"
+		printf "%*s: %s\n" ${offset} ${i} "${options[${i}]}"
 	done
 	echo
 }

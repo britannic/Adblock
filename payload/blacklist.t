@@ -291,7 +291,7 @@ sub get_tests {
     print pinwheel();
     $tests->{ $ikey++ } = {
       comment =>
-        q{Checking @{[basename( $input->{cfg}->{testscript} )]} removed},
+        qq{Checking @{[basename( $input->{cfg}->{testscript} )]} removed},
       diag => qq{@{[basename( $input->{cfg}->{testscript} )]} }
         . q{shouldn't exist - investigate!},
       lval   => qq{$input->{cfg}->{testscript}},

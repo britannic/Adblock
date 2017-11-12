@@ -102,6 +102,7 @@ our $c = {
   blink      => qq{\033[5m},
   blu        => qq{\033[34m},
   clr        => qq{\033[0m},
+  deleol     => qq{\033[K},
   grn        => qq{\033[92m},
   mag        => qq{\033[95m},
   off        => qq{\033[?25l},
@@ -148,16 +149,11 @@ sub term_end {
   clear_end();
 }
 
-# Pad a string to max terminal columns
+# Erase to end of line
 sub pad_str {
-  my $str = shift // q{};
-  my $spaces
-    = q{ }
-    x ( get_cols() - length( $str =~ s/\e[[][?]{0,1}\d+(?>(;\d+)*)[lm]//gr ) )
-    // q{};
+  my $str = shift // $c->{deleol};
 
-  return if not $spaces;
-  return sprintf( "%s%s", $str, $spaces );
+  return sprintf( "%s%s", $str, $c->{deleol} );
 }
 
 # Does just what it says
@@ -167,6 +163,7 @@ sub delete_file {
   if ( -f $input->{file} ) {
     log_msg(
       {
+        logsys  => q{},
         msg_typ => q{INFO},
         msg_str => qq{Deleting file $input->{file}},
       }
@@ -177,6 +174,7 @@ sub delete_file {
   if ( -f $input->{file} ) {
     log_msg(
       {
+        logsys  => q{},
         msg_typ => q{WARNING},
         msg_str => qq{Unable to delete $input->{file}},
       }
@@ -260,6 +258,7 @@ sub get_cfg_actv {
     $input->{show} = $TRUE;
     log_msg(
       {
+        logsys  => q{},
         show    => $input->{show},
         msg_typ => q{ERROR},
         msg_str =>
@@ -274,6 +273,7 @@ sub get_cfg_actv {
     $input->{show} = $TRUE;
     log_msg(
       {
+        logsys  => q{},
         show    => $input->{show},
         msg_typ => q{ERROR},
         msg_str => q{At least one domain or host online source/file }
@@ -320,6 +320,7 @@ sub get_cfg_file {
     $input->{show} = $TRUE;
     log_msg(
       {
+        logsys  => q{},
         show    => $input->{show},
         msg_typ => q{ERROR},
         msg_str =>
@@ -484,7 +485,7 @@ sub get_url {
   my $input = shift;
   my $ua    = HTTP::Tiny->new;
   $ua->agent(
-    q{Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/601.1.56}
+    q{Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36}
   );
 
   $input->{prefix} =~ s/^["](?<UNCMT>.*)["]$/$+{UNCMT}/g;
@@ -505,7 +506,14 @@ sub get_url {
     return $input;
   }
   else {
-    $input->{data} = {};
+    log_msg(
+      {
+        logsys  => qq{get_url: $get->{status}: $get->{reason}: $get->{content}},
+        msg_str => qq{get_url: $get->{status}: $get->{reason}: $get->{content}},
+        msg_typ => q{ERROR},
+      }
+    );
+    $input->{data} = { 1 => $get->{content} };
     return $input;
   }
 }
@@ -606,11 +614,18 @@ sub log_msg {
 
   $input->{eof} //= q{};
 
-  syslog(
-    $log_msg->{ $input->{msg_typ} },
-    qq{[$input->{msg_typ}]: } . $input->{msg_str}
-      =~ s/\e[[][?]{0,1}\d+(?>(;\d+)*)[lm]//gr
-  );
+  if ( $input->{logsys} == q{} ) {
+    syslog(
+      $log_msg->{ $input->{msg_typ} },
+      qq{[$input->{msg_typ}]: } . $input->{msg_str}
+    );
+  }
+  else {
+    syslog(
+      $log_msg->{ $input->{msg_typ} },
+      qq{[$input->{msg_typ}]: } . $input->{logsys}
+    );
+  }
 
   if ( $input->{msg_typ} eq q{INFO} ) {
     print $c->{off}, qq{\r},
@@ -619,7 +634,7 @@ sub log_msg {
       if $input->{show};
   }
   else {
-    print STDERR $c->{off}, qq{\r},
+    print $c->{off}, qq{\r},
       pad_str(qq{[$c->{red}$input->{msg_typ}$c->{clr}]: $input->{msg_str}}),
       $input->{eof}
       if $input->{show};
@@ -725,6 +740,15 @@ LINE:
   {
     log_msg(
       {
+        logsys => sprintf(
+          qq{%s: %s %s processed, (%s discarded) from %s lines},
+          $input->{src},
+          $input->{config}->{ $input->{area} }->{src}->{ $input->{src} }
+            ->{icount},
+          $input->{config}->{ $input->{area} }->{type},
+          @{ $input->{config}->{ $input->{area} }->{src}->{ $input->{src} } }
+            { q{duplicates}, q{records} }
+        ),
         msg_typ => q{INFO},
         msg_str => sprintf(
           qq{$c->{off}%s: $c->{grn}%s$c->{clr} %s processed, ($c->{red}%s$c->{clr} discarded) from $c->{mag}%s$c->{clr} lines\r},
@@ -768,6 +792,7 @@ sub write_file {
   open my $FH, q{>}, $input->{file} or return;
   log_msg(
     {
+      logsys  => q{},
       msg_typ => q{INFO},
       msg_str => sprintf( q{Saving %s}, basename( $input->{file} ) ),
     }

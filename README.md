@@ -10,18 +10,13 @@ NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDO
 EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at (https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
 
 ## Licenses
-#
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
 * http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 
 ## Features
@@ -44,44 +39,46 @@ limitations under the License.
         - select menu option #1 if installing for the first time
         - select menu option #2 to completely remove blacklisting if you have a previous version, then run install again using option #1
 
-## Removal
-* sudo /tmp/install_dnsmasq_blklist.v3.6.5
-* select option #2
+- Uninstall
+    * sudo /tmp/install_dnsmasq_blklist.v3.6.5
+        - select option #2
 
-## Versions
-* Version 3.6.5
+## Release Notes
+### Version 3.6.5
 - Enhancements
-    - Version 3.6.5 updated to fix directory group ownership for /opt/vyatta/config which leads to issues when attempting commits as the admin user (factory default admin user is ubnt). Group ownership should by vyattcfg.
+    - Updated to set directory group ownership for /opt/vyatta/config which leads to issues when attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
+    - Improved menu driven install
+    - Added /config/postconfig.d/
 
-* Version 3.6.4.2:
+### Version 3.6.4.2:
 - Enhancements and minor bug fix
     - Added experimental support for UniFi Security Gateways (version v4.3.49 and above)
     - Fixed a minor version display bug when running "update-dnsmasq.pl -version"
 
-* Version 3.6.4.1:
+### Version 3.6.4.1:
 - Fix
     - Added back YoYo source as it is back online
 ---
-* v3.6.4:
+### v3.6.4:
 - Fixes
     - Removed YoYo source as it is no longer active
     - Tested with EdgeOS v1.9.7+hotfix.4
 ---
-* v3.6.3.3:
+### v3.6.3.3:
 - Enhancements
     - Additional exclusions added to the blacklist commands file
 ---
-* v3.6.3.2:
+### v3.6.3.2:
 - Fixes
     - Rewrote version checker to handle EdgeOS versions with an additional sub releases, i.e. v1.9.1.1, v1.9.1.1.1, etc
     - Added additional logic to skip testing if main installer exited with an error
 ---
-* v3.6.3.1:
+### v3.6.3.1:
 - Fixes
     - Updated blacklist exclusions and includes
     - Removed volkerschatz as a source, since the blacklisting service is no longer offered
 ---
-* v3.6:
+### v3.6:
 - Enhancements
     - Ability to add a source that uses a local file instead of HTTP
 
@@ -153,13 +150,13 @@ limitations under the License.
 
 - Additional excludes added to blacklist configuration list
 ---
-* v3.5.5:
+### v3.5.5:
 - Updates/fixes include:
     - Added clarifying explanation for failed IP tests; advises user to ignore if router resolves upstream DNS and not locally
     - Fixed minor bug with command shell redirection
     - Additional excludes added to blacklist configuration list
 ---
-* v3.5.3:
+### v3.5.3:
 - Updates/fixes include:
     - Added code to fix 'set' failures if /opt/vyatta/active/service/dns/forwarding/ group ownership isn't writable for the operator
     - Additional excludes added based on user feedback
@@ -175,7 +172,7 @@ limitations under the License.
 | 5 | PURGE   |Clean up stale config sessions|
 | 5 | QUIT    |Exit the installer|
 ---
-* v3.5:
+### v3.5:
 - Updates/fixes include:
     - Global exclude is now available ([set service dns forwarding blacklist exclude ...])
     - Removed --debug option from update-dnsmasq.pl
@@ -187,8 +184,9 @@ limitations under the License.
     - Installer includes these new options:
     - Non-essential functions have been pruned, command line switches reduced to:
 ---
-* v3.3.2: What is new:
-- Non-essential functions have been pruned, command line switches reduced to:
+### v3.3.2: What is new:
+- Non-essential functions have been removed
+    - Command line switches reduced to:
 
             /config/scripts/update-dnsmasq.pl -h
             usage: update-dnsmasq.pl <options>
@@ -260,7 +258,8 @@ limitations under the License.
     - Optional -f config.boot parser has been completely rewritten, so that the XorpConfigParser.pm module is no longer required (saves on memory overhead and compilation time)
     - Over 70% of the code has been rewritten or updated
 ---
-* v3.24d: Updates include:
+### v3.24d:
+- Updates include:
     - 'hosts' exclusions now incorporates 'domains' exclusions and blacklists
     - Additional 'good hosts' excluded from blacklisting in the supplied install configuration
     - Fixes excluded FQDNs by using precise matching instead of fuzzy (i.e. 1.domain.tld won't also exclude b1.domain.tld)
@@ -275,7 +274,8 @@ limitations under the License.
     - Useragent: HTTP/HTTPS handling uses useragent for improved error/timeout control
     - Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during boot time
 ---
-* v3.22rc1: Updates include:
+### v3.22rc1:
+- Updates include:
     - Fixes excluded FQDNs by using precise matching instead of fuzzy (i.e. 1.domain.tld won't also exclude b1.domain.tld)
     - New --disable switch enables ADBlock by setting [set service dns forwarding blacklist enabled false]
     - New --doc switch prints out condensed man page
@@ -284,10 +284,10 @@ limitations under the License.
     - Revamped stream processor, now has ability to extract multiple FQDNs from each line or input
     - Useragent: HTTP get requests now include browser agent information to prevent website robot rejection
     - Useragent: HTTP/HTTPS handling uses useragent for improved error/timeout control
-    - Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during boot time
     - Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during router boot time
 ---
-* v3.15: Added features include:
+### v3.15:
+- Enhancements:
     - Logging to /var/log/update-blacklists-dnsmasq.log
     - --debug option: prints status messages
     - Additional download sources added to the default lists
@@ -295,15 +295,21 @@ limitations under the License.
     - Task scheduler update interval is now every 6 hours, as some of the sources change hourly (configure interval using "set system task-scheduler task update_blacklists interval"
     - Status line retains previous downloads for more detail
 ---
-* v3.12: Fixed bug reported by @soehest﻿ where certain FQDNs were being rejected by the stream processor.
+### v3.12:
+- Fixes:
+    - Fixed bug reported by @soehest﻿ where certain FQDNs were being rejected by the stream processor.
 ---
-* v3.10: Now supports https:// source URLs and improved regex handling in the stream processing engine.
+### v3.10:
+- Enhancements:
+    - Now supports https:// source URLs and improved regex handling in the stream processing engine.
 ---
-* v3.00: No longer requires regex strings, just the line prefix/preamble before the hostname in the download. If a version of ADBlock was installed previously, you will need to select option 2 to remove it and then install this version. This is necessary to ensure the configure paths are correctly set up for the new prefix option which replaces the regex string.
+### v3.00:
+- Enhancements:
+    - No longer requires regex strings, just the line prefix/preamble before the hostname in the download. If a version of ADBlock was installed previously, you will need to select option 2 to remove it and then install this version. This is necessary to ensure the configure paths are correctly set up for the new prefix option which replaces the regex string.
 ---
 
 ## Post Installation
-Here is the scheduler configuration after running install_adblock:
+* Here is the scheduler configuration after running install_adblock:
 
 ```python
     show system task-scheduler
@@ -314,7 +320,7 @@ Here is the scheduler configuration after running install_adblock:
          interval 6h
      }
 ```
-The script will also install a default blacklist setup, here is the stanza (show service dns forwarding):
+* The script will also install a default blacklist setup, here is the stanza (show service dns forwarding):
 
 ```python
     blacklist {
@@ -391,7 +397,8 @@ The script will also install a default blacklist setup, here is the stanza (show
         }
     }
 ```
-CLI commands to configure the ADBlock Blacklist:
+
+## Example CLI commands to configure the ADBlock Blacklist:
 
     set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
     set service dns forwarding blacklist disabled false
@@ -450,21 +457,20 @@ CLI commands to configure the ADBlock Blacklist:
     set system task-scheduler task update_blacklists interval 6h
 
 ## Notes:
-In order to make this work properly, you will need to first ensure that your dnsmasq is correctly set up. An example configuration is posted below:
+For proper operation, first ensure dnsmasq is set up correctly, e.g.:
 
     show service dns forwarding
-     cache-size 2048
-     listen-on eth0
-     listen-on eth2
-     listen-on lo
-     name-server 208.67.220.220
-     name-server 208.67.222.222
-     name-server 2620:0:ccc::2
-     name-server 2620:0:ccd::2
-     options expand-hosts
-     options bogus-priv
-     options localise-queries
-     options domain=ubnt.home
-     options strict-order
-     options listen-address=127.0.0.1
-     system
+    cache-size 150
+    /* Set to WAN interface or specify "listen-on"" interfaces instead */
+    except-interface eth1
+    name-server 208.67.220.220
+    name-server 208.67.222.222
+    name-server 2620:0:ccc::2
+    name-server 2620:0:ccd::2
+    options expand-hosts
+    options bogus-priv
+    options localise-queries
+    options domain=ubnt.home
+    options strict-order
+    options listen-address=127.0.0.1
+    system

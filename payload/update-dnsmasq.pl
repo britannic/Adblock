@@ -20,6 +20,7 @@
 # Author: Neil Beadle
 # Description: This script creates dnsmasq configuration files to redirect dns
 # look ups to alternative IPs (blackholes, pixel servers etc.)
+# USE AT YOUR OWN RISK!
 #
 
 use File::Basename;
@@ -29,7 +30,6 @@ use lib q{/config/lib/perl};
 use Sys::Syslog qw(:standard :macros);
 use threads;
 use v5.14;
-
 # use strict;
 # use warnings;
 use EdgeOS::DNS::Blacklist (
@@ -54,8 +54,7 @@ use EdgeOS::DNS::Blacklist (
 );
 delete $ENV{PATH};
 my ( $cfg_file, $show );
-# my $version = q{3.6.4.1};
-my $cols    = get_cols();
+my $cols = get_cols();
 
 ############################### script runs here ###############################
 exit if &main();
@@ -132,10 +131,10 @@ sub main {
   log_msg(
     {
       cols    => $cols,
+      logsys  => q{},
+      msg_str => qq{---+++ dnsmasq blacklist $VERSION +++---},
+      msg_typ => q{INFO},
       show    => $show,
-      msg_typ => q{info},
-      msg_str =>,
-      qq{---+++ dnsmasq blacklist $VERSION +++---},
     }
   );
 
@@ -151,9 +150,10 @@ sub main {
   log_msg(
     {
       cols    => $cols,
-      show    => $show,
-      msg_typ => q{error},
+      logsys  => q{},
       msg_str => qq{Cannot load dnsmasq blacklist configuration - exiting},
+      msg_typ => q{ERROR},
+      show    => $show,
     }
     ),
     return
@@ -230,26 +230,31 @@ sub main {
         my $host;
         if ($url) {
           my $uri = new URI($url);
-          if ( $uri->scheme ne 'http' ) {
+          $host = $uri->host;
+          if ( not( $uri->scheme eq 'http' || $uri->scheme eq 'https' ) ) {
             log_msg(
               {
                 cols    => $cols,
-                show    => $show,
-                msg_typ => q{error},
-                msg_str => sprintf q{URL: %s incorrectly formatted} => $area,
+                logsys  => q{},
+                msg_str => sprintf q{%s URL: %s incorrectly formatted} => $area,
                 $host,
+                msg_typ => q{ERROR},
+                show    => $show,
               }
               )
               if $show;
           }
-          $host = $uri->host;
+
           log_msg(
             {
               cols    => $cols,
+              logsys  => q{},
+              msg_str => sprintf(
+                q{Downloading %s blacklist from %s} => $area,
+                $host
+              ),
+              msg_typ => q{INFO},
               show    => $show,
-              msg_typ => q{info},
-              msg_str => sprintf q{Downloading %s blacklist from %s} => $area,
-              $host,
             }
             )
             if $show;
@@ -297,10 +302,11 @@ sub main {
           log_msg(
             {
               cols    => $cols,
-              show    => $show,
-              msg_typ => q{info},
+              logsys  => q{},
               msg_str => sprintf q{%s lines received from: %s } => $rec_count,
               $data->{host},
+              msg_typ => q{INFO},
+              show    => $show,
             }
           );
 
@@ -364,9 +370,10 @@ sub main {
             log_msg(
               {
                 cols    => $cols,
-                show    => $show,
-                msg_typ => q{warning},
+                logsys  => q{},
                 msg_str => qq{Zero records processed from $data->{src}!},
+                msg_typ => q{WARNING},
+                show    => $show,
               }
             );
           }
@@ -375,15 +382,17 @@ sub main {
 
       log_msg(
         {
-          cols    => $cols,
-          show    => $show,
-          msg_typ => q{info},
+          cols   => $cols,
+          logsys => qq{Processed %s %s (%s } . qq{rejected) from %s (%s orig.)},
+          @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
+          msg_typ => q{INFO},
           msg_str => sprintf(
             qq{Processed $c->{grn}%s$c->{clr} %s ($c->{red}%s$c->{clr} }
-              . qq{rejected) from $c->{mag}%s$c->{clr} (%s orig.)%s} =>
-              @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
+              . qq{rejected) from $c->{mag}%s$c->{clr} (%s orig.)%s},
+            @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
             qq{\n}
           ),
+          show => $show,
         }
       );
 
@@ -400,14 +409,15 @@ sub main {
           log_msg(
             {
               cols    => $cols,
-              show    => $show,
-              msg_typ => q{info},
+              logsys  => q{},
+              msg_typ => q{INFO},
               msg_str => sprintf qq{$area blacklisted: domain %s %s times} =>
                 $key,
               $value,
+              show => $show,
             }
           );
-          push @flagged_domains, qq{$key # $value times};
+          push @flagged_domains => qq{$key # $value times};
         }
       }
 
@@ -428,11 +438,12 @@ sub main {
 
         log_msg(
           {
-            cols    => $cols,
-            show    => $show,
-            msg_typ => q{info},
+            cols   => $cols,
+            logsys => q{},
             msg_str =>
               qq{Flagged domains command set written to: $cfg->{flg_file}},
+            msg_typ => q{INFO},
+            show    => $show,
           }
         );
       }
@@ -453,9 +464,10 @@ sub main {
   log_msg(
     {
       cols    => $cols,
-      show    => $show,
-      msg_typ => q{info},
+      logsys  => q{},
       msg_str => q{Reloading dnsmasq configuration...},
+      msg_typ => q{INFO},
+      show    => $show,
     }
   );
 
@@ -466,9 +478,10 @@ sub main {
   log_msg(
     {
       cols    => $cols,
-      show    => $show,
-      msg_typ => q{error},
+      logsys  => q{},
       msg_str => q{Reloading dnsmasq configuration failed},
+      msg_typ => q{ERROR},
+      show    => $show,
     }
     )
     if ( $? >> 8 != 0 );

@@ -33,7 +33,7 @@ INSTALL="install_${NAME}.v${VERSION}"
 LIB="~/Projects/AdBlock/payload/lib/EdgeOS/DNS/Blacklist.pm"
 PAYLOAD='payload'
 POSTINSTALL="Install_${NAME}.v${VERSION}"
-SED='gsed -i.bak '
+SED='gsed -i.bak'
 SEDCMD='s/Copyright (C) 20../Copyright (C) '$(date +"%Y")'/g'
 SEDVER='s/^VERSION=.*$/VERSION=\"'${VERSION}'\"/g'
 UPDATE_CPYRT=(LICENSE decompress README.md)
@@ -56,12 +56,15 @@ then
 
 	echo "#!/usr/bin/env bash" > "${PAYLOAD}/${POSTINSTALL}"
 	cat LICENSE decompress_install_Adblock ${PAYLOAD}.tgz >> "${PAYLOAD}/${POSTINSTALL}"
-
+	echo "${POSTINSTALL} created"
 	cd ${PAYLOAD}
+
+	chmod 0755 ${POSTINSTALL}
+
 	cp setup remove
 
 # Update Copyright to current year
-	for i in $(find . -type f ! -path "./payload/blacklist/*" ! -path "./.git/*" ! -name '*.bak' ! -name '.?*')
+	for i in $(find . -type f ! -path "./blacklist/*" ! -path "./.git/*" ! -name '*.bak' ! -name '.?*')
 	do
 		eval ${SED} \'${SEDCMD}\' ${i}
 	done
