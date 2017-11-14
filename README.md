@@ -46,9 +46,10 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Release Notes
 ### Version 3.6.5
 - Enhancements
-    - Updated to set directory group ownership for /opt/vyatta/config which leads to issues when attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
+    - Updated to set directory group ownership for /opt/vyatta/config to prevent issues  attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
     - Improved menu driven install
-    - Added /config/postconfig.d/
+    - Added /config/postconfig.d/Install_dnsmasq_blklist
+    - Added logic to prevent downloading from web sources with invalid SSL certificates
 
 ### Version 3.6.4.2:
 - Enhancements and minor bug fix
