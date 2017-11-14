@@ -30,12 +30,14 @@ use lib q{/config/lib/perl};
 use Sys::Syslog qw(:standard :macros);
 use threads;
 use v5.14;
+
 # use strict;
 # use warnings;
 use EdgeOS::DNS::Blacklist (
   qw{
     $c
     $FALSE
+    $NAME
     $TRUE
     $VERSION
     delete_file
@@ -120,11 +122,11 @@ sub main {
   get_options() or usage( { option => q{help}, exit_code => 1 } );
 
   # Find reasons to quit
-  exit 0 if ( -f $cfg->{no_op} );    # If the no_op file exists, exit.
+  exit 0 if ( -e $cfg->{no_op} );    # If the no_op file exists, exit.
 
   usage( { option => q{sudo}, exit_code => 1 } ) if not is_admin();
   usage( { option => q{cfg_file}, exit_code => 1 } )
-    if defined $cfg_file && !-f $cfg_file;
+    if defined $cfg_file && !-e $cfg_file;
 
   # Start logging
   openlog( $cfg->{log_name}, q{}, LOG_DAEMON );
@@ -132,7 +134,7 @@ sub main {
     {
       cols    => $cols,
       logsys  => q{},
-      msg_str => qq{---+++ dnsmasq blacklist $VERSION +++---},
+      msg_str => qq{---+++ $NAME $VERSION +++---},
       msg_typ => q{INFO},
       show    => $show,
     }
@@ -205,8 +207,10 @@ sub main {
             data => [
               map {
                 my $value = $_;
-                sprintf qq{%s%s%s/%s\n} => $cfg->{$area}->{target},
-                  $equals, $value, $cfg->{$area}->{dns_redirect_ip};
+                sprintf(
+                  qq{%s%s%s/%s\n} => $cfg->{$area}->{target} => $equals,
+                  $value, $cfg->{$area}->{dns_redirect_ip}
+                );
                 } sort keys %{ $cfg->{$area}->{blklst} }
             ],
             file => qq{$cfg->{dmasq_d}/$area.pre-configured.blacklist.conf},
@@ -214,6 +218,7 @@ sub main {
         );
       }
 
+    NEXT:
       for my $source (@sources) {
         my ( $file, $url )
           = @{ $cfg->{$area}->{src}->{$source} }{ q{file}, q{url} };
@@ -236,13 +241,16 @@ sub main {
               {
                 cols    => $cols,
                 logsys  => q{},
-                msg_str => sprintf q{%s URL: %s incorrectly formatted} => $area,
-                $host,
+                msg_str => sprintf(
+                  q{%s URL: %s incorrectly formatted} => $area,
+                  $host
+                ),
                 msg_typ => q{ERROR},
                 show    => $show,
               }
               )
               if $show;
+            next NEXT;
           }
 
           log_msg(
@@ -250,7 +258,7 @@ sub main {
               cols    => $cols,
               logsys  => q{},
               msg_str => sprintf(
-                q{Downloading %s blacklist from %s} => $area,
+                q{Downloading %s blacklist from %s}, $area,
                 $host
               ),
               msg_typ => q{INFO},
@@ -301,10 +309,12 @@ sub main {
         if ( exists $data->{host} && scalar $rec_count ) {
           log_msg(
             {
-              cols    => $cols,
-              logsys  => q{},
-              msg_str => sprintf q{%s lines received from: %s } => $rec_count,
-              $data->{host},
+              cols                             => $cols,
+              logsys                           => q{},
+              msg_str                          => sprintf
+                q{%s lines received from: %s } => $rec_count,
+              $data->{host}
+              ,
               msg_typ => q{INFO},
               show    => $show,
             }
@@ -328,16 +338,20 @@ sub main {
 
           # Write blacklist to file, change to domain format if area = domains
           my $file = qq{$cfg->{dmasq_d}/$area.$data->{src}.blacklist.conf};
-          if ( keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} } ) {
+          if ( keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} }
+            and $data->{success} )
+          {
             my $equals = $area ne q{domains} ? q{=/} : q{=/.};
             write_file(
               {
                 data => [
                   map {
                     my $value = $_;
-                    sprintf qq{%s%s%s/%s\n} => $cfg->{$area}->{target},
+                    sprintf(
+                      qq{%s%s%s/%s\n} => $cfg->{$area}->{target},
                       $equals, $value,
-                      $cfg->{$area}->{src}->{ $data->{src} }->{dns_redirect_ip};
+                      $cfg->{$area}->{src}->{ $data->{src} }->{dns_redirect_ip}
+                    );
                     } sort
                     keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} }
                 ],
@@ -360,7 +374,12 @@ sub main {
             delete $cfg->{$area}->{src}->{ $data->{src} };
           }
           else {
-            my @data = ( "# No data received\n", "# This shouldn't happen!\n" );
+            my @data = (
+              sprintf(
+                    qq{# No data received\n# HTTP Status: %s\n# Reason: %s\n}
+                  . qq{# Content: %s\n} => @{$data}{qw{status reason content}}
+              )
+            );
             write_file(
               {
                 data => \@data,
@@ -383,16 +402,18 @@ sub main {
       log_msg(
         {
           cols   => $cols,
-          logsys => qq{Processed %s %s (%s } . qq{rejected) from %s (%s orig.)},
-          @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
-          msg_typ => q{INFO},
+          logsys => sprintf(
+            qq{Processed %s %s (%s rejected) from %s (%s orig.) lines},
+            @{ $cfg->{$area} }{qw(unique type duplicates icount records)}
+          ),
           msg_str => sprintf(
             qq{Processed $c->{grn}%s$c->{clr} %s ($c->{red}%s$c->{clr} }
-              . qq{rejected) from $c->{mag}%s$c->{clr} (%s orig.)%s},
+              . qq{rejected) from $c->{mag}%s$c->{clr} (%s orig.) lines%s},
             @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
             qq{\n}
           ),
-          show => $show,
+          msg_typ => q{INFO},
+          show    => $show,
         }
       );
 
@@ -410,11 +431,12 @@ sub main {
             {
               cols    => $cols,
               logsys  => q{},
+              msg_str => sprintf(
+                qq{$area blacklisted: domain %s %s times} => $key,
+                $value
+              ),
               msg_typ => q{INFO},
-              msg_str => sprintf qq{$area blacklisted: domain %s %s times} =>
-                $key,
-              $value,
-              show => $show,
+              show    => $show,
             }
           );
           push @flagged_domains => qq{$key # $value times};
@@ -427,9 +449,9 @@ sub main {
             data => [
               map {
                 my $value = $_;
-                sprintf
+                sprintf(
                   qq{set service dns forwarding blacklist domains include %s\n}
-                  => $value;
+                    => $value );
                 } @flagged_domains
             ],
             file => $cfg->{flg_file},

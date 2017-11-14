@@ -22,6 +22,7 @@
 # look ups to alternative IPs (blackholes, pixel servers etc.)
 # USE AT YOUR OWN RISK!
 #
+
 use feature qw(switch);
 use File::Basename;
 use Getopt::Long;
@@ -39,9 +40,11 @@ use EdgeOS::DNS::Blacklist (
   qw{
     $c
     $FALSE
+    $NAME
     $TRUE
     $VERSION
     get_cfg_actv
+    get_cols
     get_file
     get_url
     get_user
@@ -55,12 +58,11 @@ use EdgeOS::DNS::Blacklist (
     }
 );
 
-my ($cols) = qx{tput cols};
+my $cols    = get_cols();
 my $prg     = { errors => 0, calls => 0, };
 my $program = basename($0);
 my $edgeOS  = is_version();
 my $name    = q{dnsmasq blacklist};
-my $NAME    = q{dnsmasq_blklist};
 my $begin   = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin};
 my $commit  = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit};
 my $delete  = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete};
@@ -83,7 +85,7 @@ my $cfg     = {
   old_lib  => q{/opt/vyatta/share/perl5},
   oldconf  => qq{{dnsmasq,domai*,hos*,zon*}.blacklist.conf},
   oldscrpt => q{update-blacklists-dnsmasq.pl},
-  postcfg  => qq{Install_${NAME}.v${VERSION}},
+  postcfg  => qq{Install_${NAME}},
   postcfgd => q{/config/scripts/post-config.d},
   script   => q{update-dnsmasq.pl},
   scrpt_d  => q{/config/scripts},
@@ -125,7 +127,7 @@ sub delete_file {
   my $input = shift;
   my $cmd   = qq{sudo rm $input->{file} 2>&1};
 
-  if ( -f $input->{file} ) {
+  if ( -e $input->{file} ) {
     log_msg(
       {
         show    => $TRUE,
@@ -133,21 +135,21 @@ sub delete_file {
         eof     => qq{\n},
         logsys  => q{},
         msg_typ => q{INFO},
-        msg_str => sprintf q{Deleting file %s},
-        $input->{file},
+        msg_str => sprintf( q{Deleting file %s} =>
+            $input->{file} ),
       }
     );
     qx{$cmd};
     $prg->{calls}++;
   }
 
-  if ( -f $input->{file} ) {
+  if ( -e $input->{file} ) {
     $prg->{fail}->{ $prg->{errors}++ } = $cmd;
     log_msg(
       {
         cols    => $cols,
         eof     => qq{\n},
-        msg_str => sprintf( q{Unable to delete %s}, $input->{file} ),
+        msg_str => sprintf( q{Unable to delete %s} => $input->{file} ),
         msg_typ => q{WARNING},
         logsys  => q{},
         show    => $TRUE,
@@ -354,8 +356,10 @@ sub get_blacklist {
             data => [
               map {
                 my $value = $_;
-                sprintf qq{%s%s%s/%s\n} => $cfg->{$area}->{target},
-                  $equals, $value, $cfg->{$area}->{dns_redirect_ip};
+                sprintf(
+                  qq{%s%s%s/%s\n} => $cfg->{$area}->{target} => $equals,
+                  $value, $cfg->{$area}->{dns_redirect_ip}
+                );
                 } sort keys %{ $cfg->{$area}->{blklst} }
             ],
             file => qq{$cfg->{dmasq_d}/$area.pre-configured.blacklist.conf},
@@ -363,6 +367,7 @@ sub get_blacklist {
         );
       }
 
+    NEXT:
       for my $source (@sources) {
         my ( $file, $url )
           = @{ $cfg->{$area}->{src}->{$source} }{ q{file}, q{url} };
@@ -385,12 +390,15 @@ sub get_blacklist {
               {
                 cols    => $cols,
                 logsys  => q{},
-                msg_str => sprintf q{%s URL: %s incorrectly formatted} => $area,
-                $host,
+                msg_str => sprintf(
+                  q{%s URL: %s incorrectly formatted} => $area,
+                  $host
+                ),
                 msg_typ => q{ERROR},
                 show    => $TRUE,
               }
             );
+            next NEXT;
           }
 
           log_msg(
@@ -399,11 +407,12 @@ sub get_blacklist {
               eof    => qq{\n},
               logsys => q{},
               msg_str =>
-                sprintf( q{Downloading %s blacklist from %s}, $area, $host ),
+                sprintf( q{Downloading %s blacklist from %s} => $area, $host ),
               msg_typ => q{INFO},
               show    => $TRUE,
             }
           );
+
           push @threads => threads->create(
             { context => q{list}, exit => q{thread_only} },
             \&get_url,
@@ -450,8 +459,7 @@ sub get_blacklist {
               eof     => qq{\n},
               logsys  => q{},
               msg_str => sprintf(
-                q{%s lines received from: %s },
-                $rec_count, $data->{host}
+                q{%s lines received from: %s } => $rec_count, $data->{host}
               ),
               msg_typ => q{INFO},
               show    => $TRUE,
@@ -481,15 +489,19 @@ sub get_blacklist {
 
           # Write blacklist to file, change to domain format if area = domains
           my $file = qq{$cfg->{dmasq_d}/$area.$data->{src}.blacklist.conf};
-          if ( keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} } ) {
+          if ( keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} }
+            and $data->{success} )
+          {
             my $equals = $area ne q{domains} ? q{=/} : q{=/.};
             write_file(
               {
                 data => [
                   map {
                     my $value = $_;
-                    sprintf qq{%s%s%s/%s\n} => $cfg->{$area}->{target},
-                      $equals, $value, $cfg->{$area}->{dns_redirect_ip};
+                    sprintf(
+                      qq{%s%s%s/%s\n} => $cfg->{$area}->{target},
+                      $equals, $value, $cfg->{$area}->{dns_redirect_ip}
+                    );
                     } sort
                     keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} }
                 ],
@@ -512,7 +524,12 @@ sub get_blacklist {
             delete $cfg->{$area}->{src}->{ $data->{src} };
           }
           else {
-            my @data = ( "# No data received\n", "# This shouldn't happen!\n" );
+            my @data = (
+              sprintf(
+                    qq{# No data received\n# HTTP Status: %s\n# Reason: %s\n}
+                  . qq{# Content: %s\n} => @{$data}{qw{status reason content}}
+              )
+            );
             write_file(
               {
                 data => \@data,
@@ -538,13 +555,13 @@ sub get_blacklist {
           cols   => $cols,
           eof    => qq{\n},
           logsys => sprintf(
-            qq{Processed %s %s (%s rejected) from %s (%s orig.)},
-            @{ $cfg->{$area} }{qw(unique type duplicates icount records)}
+            qq{Processed %s %s (%s rejected) from %s (%s orig.)} =>
+              @{ $cfg->{$area} }{qw(unique type duplicates icount records)}
           ),
           msg_str => sprintf(
             qq{Processed $c->{grn}%s$c->{clr} %s ($c->{red}%s$c->{clr} }
-              . qq{rejected) from $c->{mag}%s$c->{clr} (%s orig.)%s},
-            @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
+              . qq{rejected) from $c->{mag}%s$c->{clr} (%s orig.)%s} =>
+              @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
             qq{\n}
           ),
           msg_typ => q{INFO},
@@ -586,9 +603,9 @@ sub get_blacklist {
             data => [
               map {
                 my $value = $_;
-                sprintf
+                sprintf(
                   qq{set service dns forwarding blacklist domains include %s\n}
-                  => $value;
+                    => $value );
                 } @flagged_domains
             ],
             file => $cfg->{flg_file},
@@ -788,14 +805,14 @@ sub remove {
       cols    => $cols,
       eof     => qq{\n},
       logsys  => q{},
-      msg_str => qq{Removing blacklist support files and scripts...},
+      msg_str => q{Removing blacklist support files and scripts...},
       msg_typ => q{INFO},
       show    => $TRUE,
     }
   );
 
   for my $file (@files) {
-    delete_file( { file => $file } ) if -f $file;
+    delete_file( { file => $file } ) if -e $file;
   }
 
   log_msg(
@@ -803,7 +820,7 @@ sub remove {
       cols    => $cols,
       eof     => qq{\n},
       logsys  => q{},
-      msg_str => qq{Checking active configuration directory permissions},
+      msg_str => q{Checking active configuration directory permissions},
       msg_typ => q{INFO},
       show    => $TRUE,
     }
@@ -815,7 +832,7 @@ sub remove {
       grps       => get_user(     { attribute => q{grps} } )
     }
     )
-    or die qq{Unable to repair active configuration directory permissions!};
+    or die q{Unable to repair active configuration directory permissions!};
 
   log_msg(
     {
@@ -958,18 +975,18 @@ sub setup {
     );
 
     for my $file (@directory) {
-      if ( -f $file ) {
+      if ( -e $file ) {
         delete_file( { file => $file } ) if $file;
       }
     }
   }
 
-  if ( -f qq{$cfg->{scrpt_d}/$cfg->{oldscrpt}} ) {
+  if ( -e qq{$cfg->{scrpt_d}/$cfg->{oldscrpt}} ) {
     delete_file( { file => qq{$cfg->{scrpt_d}/$cfg->{oldscrpt}} } );
   }
 
   # Create script directory in upgrade persistent /config/scripts
-  if ( !-f qq{$cfg->{scrpt_d}/$cfg->{scrpt_d}/$cfg->{script}} ) {
+  if ( !-e qq{$cfg->{scrpt_d}/$cfg->{scrpt_d}/$cfg->{script}} ) {
 
     # Install update-dnsmasq.pl script
     exec_command(
@@ -996,17 +1013,20 @@ sub setup {
     }
   );
 
-  # Install post-configuration install script
-  exec_command(
-    {
-      cmd =>
-        qq{install -o root -g vyattacfg -m 0755 $cfg->{postcfg} "$cfg->{postcfgd}/$cfg->{postcfg}"},
-      exec_msg =>
-        qq{Installing $name $cfg->{postcfg} to $cfg->{postcfgd}/},
-      fail_msg =>
-        qq{Unable to install $name $cfg->{postcfg} to $cfg->{postcfgd}/},
-    }
-  );
+  if ( !-e qq{$cfg->{postcfgd}/$cfg->{postcfg}} ) {
+
+    # Install post-configuration install script
+    exec_command(
+      {
+        cmd =>
+          qq{install -o root -g vyattacfg -m 0755 $cfg->{postcfg} "$cfg->{postcfgd}/$cfg->{postcfg}"},
+        exec_msg =>
+          qq{Installing $name $cfg->{postcfg} to $cfg->{postcfgd}/},
+        fail_msg =>
+          qq{Unable to install $name $cfg->{postcfg} to $cfg->{postcfgd}/},
+      }
+    );
+  }
 
   # Copy the template directories and files to /opt/vyatta/share/vyatta-cfg/
   exec_command(

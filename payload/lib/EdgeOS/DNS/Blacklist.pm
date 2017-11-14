@@ -28,8 +28,8 @@ use v5.14;
 use lib q{/opt/vyatta/share/perl5/};
 use File::Basename;
 use Getopt::Long;
-use HTTP::Tiny;
 use Term::Cap;
+use HTTP::Tiny;
 use POSIX qw{geteuid getegid getgroups};
 use Socket (
   qw{
@@ -59,6 +59,7 @@ our @EXPORT_OK = (
   qw{
     $c
     $FALSE
+    $NAME
     $spoke
     $tcap
     $TRUE
@@ -92,6 +93,7 @@ our @EXPORT_OK = (
     write_file
     }
 );
+our $NAME    = q{dnsmasq_blklist};
 our $VERSION = q{3.6.5};
 our $TRUE;
 *TRUE = \1;
@@ -160,7 +162,7 @@ sub pad_str {
 sub delete_file {
   my $input = shift;
 
-  if ( -f $input->{file} ) {
+  if ( -e $input->{file} ) {
     log_msg(
       {
         logsys  => q{},
@@ -171,7 +173,7 @@ sub delete_file {
     unlink $input->{file};
   }
 
-  if ( -f $input->{file} ) {
+  if ( -e $input->{file} ) {
     log_msg(
       {
         logsys  => q{},
@@ -360,7 +362,7 @@ sub get_dev_stats {
 # Read a file into memory and return the data to the calling function
 sub get_file {
   my $input = shift;
-  if ( -f $input->{file} ) {
+  if ( -e $input->{file} ) {
     open my $CF, q{<}, $input->{file}
       or die qq{[ERROR]: Unable to open $input->{file}: $!};
     chomp( @{ $input->{data} } = <$CF> );
@@ -485,7 +487,7 @@ sub get_url {
   my $input = shift;
   my $ua    = HTTP::Tiny->new;
   $ua->agent(
-    q{Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36}
+    q{Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/601.1.56}
   );
 
   $input->{prefix} =~ s/^["](?<UNCMT>.*)["]$/$+{UNCMT}/g;
@@ -498,7 +500,8 @@ sub get_url {
   my $get = $ua->get( $input->{url} );
 
   if ( $get->{success} ) {
-    $input->{data} = {
+    $input->{success} = 1;
+    $input->{data}    = {
       map { my $key = $_; lc($key) => 1 }
         grep { $_ =~ /$re->{SELECT}/ } split /$re->{SPLIT}/,
       $get->{content}
@@ -508,12 +511,14 @@ sub get_url {
   else {
     log_msg(
       {
-        logsys  => qq{get_url: $get->{status}: $get->{reason}: $get->{content}},
+        logsys  => q{},
         msg_str => qq{get_url: $get->{status}: $get->{reason}: $get->{content}},
         msg_typ => q{ERROR},
       }
     );
     $input->{data} = { 1 => $get->{content} };
+    @{$input}{qw{content reason status success}}
+      = @{$get}{qw{content reason status success}};
     return $input;
   }
 }
@@ -587,7 +592,6 @@ sub is_version {
   my $cmd = qq{cat /etc/version};
   chomp( my $edgeOS = qx{$cmd} );
 
-#   if ( $edgeOS =~ s{^Version:\s*(?<VERSION>.*)$}{$+{VERSION}}xms ) {
   if ( @ver = split /\./ => $edgeOS ) {
     $version = join "." => @ver[ 0 .. $#ver - 3 ];
     $build = $ver[ $#ver - 2 ];

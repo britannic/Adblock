@@ -44,8 +44,10 @@ use EdgeOS::DNS::Blacklist (
   qw{
     $c
     $FALSE
+    $NAME
     $spoke
     $TRUE
+    $VERSION
     get_cfg_actv
     get_cfg_file
     get_cols
@@ -87,7 +89,7 @@ sub exec_test {
     },
     is_file => sub {
       my $rslt = is(
-        -f $input->{run}->{lval},
+        -e $input->{run}->{lval},
         $input->{run}->{result},
         $input->{run}->{comment}
       );
@@ -115,7 +117,7 @@ sub exec_test {
     },
     isnt_file => sub {
       my $rslt = isnt(
-        -f $input->{run}->{lval},
+        -e $input->{run}->{lval},
         $input->{run}->{result},
         $input->{run}->{comment}
       );
@@ -227,9 +229,20 @@ sub get_tests {
 
     $tests->{ $ikey++ } = {
       comment =>
+        qq{Checking @{[basename( $input->{cfg}->{installer} )]} exists},
+      diag =>
+        qq{@{[basename( $input->{cfg}->{installer} )]} not found - investigate!},
+      lval   => qq{$input->{cfg}->{installer}},
+      result => $TRUE,
+      test   => q{is_file},
+    };
+
+    print pinwheel();
+    $tests->{ $ikey++ } = {
+      comment =>
         qq{Checking @{[basename( $input->{cfg}->{updatescript} )]} exists},
       diag =>
-        qq{@{[basename( $input->{cfg}->{updatescript} )]} found - investigate!},
+        qq{@{[basename( $input->{cfg}->{updatescript} )]} not found - investigate!},
       lval   => qq{$input->{cfg}->{updatescript}},
       result => $TRUE,
       test   => q{is_file},
@@ -240,7 +253,7 @@ sub get_tests {
       comment =>
         qq{Checking @{[basename( $input->{cfg}->{flag_file} )]} exists},
       diag => qq{@{[basename( $input->{cfg}->{flag_file} )]} }
-        . q{should exist - investigate!},
+        . q{not found - investigate!},
       lval   => qq{$input->{cfg}->{flag_file}},
       result => $TRUE,
       test   => q{is_file},
@@ -312,7 +325,7 @@ sub get_tests {
     print pinwheel();
     $tests->{ $ikey++ } = {
       comment => qq{Checking blacklist configure templates don't exist},
-      diag    => qq{Found $input->{cfg}->{tmplts} - should be deleted!},
+      diag    => qq{Found $input->{cfg}->{tmplts} - should have been deleted!},
       lval    => $input->{cfg}->{tmplts},
       result  => $TRUE,
       test    => q{isnt_dir},
@@ -322,7 +335,7 @@ sub get_tests {
     my $lib = qq{$input->{cfg}->{lib}/$input->{cfg}->{mod_dir}};
     $tests->{ $ikey++ } = {
       comment => qq{Checking Blacklist perl lib directory doesn't exist},
-      diag    => qq{Found $lib - it should be removed!},
+      diag    => qq{Found $lib - it shouldn't exist!},
       lval    => $lib,
       result  => $TRUE,
       test    => q{isnt_dir},
@@ -333,11 +346,35 @@ sub get_tests {
       = qq{$input->{cfg}->{lib}/$input->{cfg}->{mod_dir}/$input->{cfg}->{module}};
     $tests->{ $ikey++ } = {
       comment => qq{Checking Blacklist.pm perl module doesn't exist},
-      diag    => qq{Found $module - it should be removed!},
+      diag    => qq{Found $module - it shouldn't exist'!},
       lval    => $module,
       result  => $TRUE,
       test    => q{isnt_file},
     };
+
+    print pinwheel();
+    $tests->{ $ikey++ } = {
+      comment =>
+        qq{Checking @{[basename( $input->{cfg}->{installer} )]} doesn't exist},
+      diag =>
+        qq{@{[basename( $input->{cfg}->{installer} )]} found - investigate!},
+      lval   => qq{$input->{cfg}->{installer}},
+      result => $TRUE,
+      test   => q{isnt_file},
+    };
+
+    print pinwheel();
+    $tests->{ $ikey++ } = {
+      comment =>
+        qq{Checking @{[basename( $input->{cfg}->{updatescript} )]} doesn't exist},
+      diag =>
+        qq{@{[basename( $input->{cfg}->{updatescript} )]} found - investigate!},
+      lval   => qq{$input->{cfg}->{updatescript}},
+      result => $TRUE,
+      test   => q{isnt_file},
+    };
+
+    print pinwheel();
   }
 
   my @areas = @{ get_areas( { cfg => $input->{cfg} } ) };
@@ -444,7 +481,7 @@ sub get_tests {
           };
         }
 
-        print pad_str(qq{@{[pinwheel()]} Checking $area IP data...});
+        print pad_str(qq{@{[pinwheel()]} Checking $area IPs...});
 
         my $re        = qr{(?:address=[/][.]{0,1}.*[/])(?<IP>.*)};
         my %found_ips = map {
@@ -534,6 +571,7 @@ sub main {
     dnsmasq_dir => q{/etc/dnsmasq.d},
     failed      => 0,
     flag_file   => q{/var/log/update-dnsmasq-flagged.cmds},
+    installer   => qq{/config/scripts/post-config.d/Install_${NAME}},
     lib         => q{/config/lib/perl},
     mod_dir     => q{EdgeOS/DNS/},
     module      => q{Blacklist.pm},

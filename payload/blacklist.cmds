@@ -13,6 +13,11 @@
 # limitations under the License.
 # **** End License ****
 
+# set service dns forwarding blacklist dns-redirect-ip 192.168.168.1
+# set service dns forwarding blacklist domains source zeus description 'abuse.ch ZeuS domain blocklist'
+# set service dns forwarding blacklist domains source zeus prefix ''
+# set service dns forwarding blacklist domains source zeus url 'https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist'
+delete service dns forwarding blacklist domains source zeus
 set service dns forwarding blacklist disabled false
 set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
 set service dns forwarding blacklist domains exclude bing.com
@@ -40,9 +45,6 @@ set service dns forwarding blacklist domains source malwaredomains.com url 'http
 set service dns forwarding blacklist domains source simple_tracking description 'Basic tracking list by Disconnect'
 set service dns forwarding blacklist domains source simple_tracking prefix ''
 set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
-# set service dns forwarding blacklist domains source zeus description 'abuse.ch ZeuS domain blocklist'
-# set service dns forwarding blacklist domains source zeus prefix ''
-# set service dns forwarding blacklist domains source zeus url 'https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist'
 set service dns forwarding blacklist exclude 1e100.net
 set service dns forwarding blacklist exclude 2o7.net
 set service dns forwarding blacklist exclude adobedtm.com

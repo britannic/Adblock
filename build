@@ -32,7 +32,7 @@ BLACKLIST="${NAME}.${VERSION}."
 INSTALL="install_${NAME}.v${VERSION}"
 LIB="~/Projects/AdBlock/payload/lib/EdgeOS/DNS/Blacklist.pm"
 PAYLOAD='payload'
-POSTINSTALL="Install_${NAME}.v${VERSION}"
+POSTINSTALL="Install_${NAME}"
 SED='gsed -i.bak'
 SEDCMD='s/Copyright (C) 20../Copyright (C) '$(date +"%Y")'/g'
 SEDVER='s/^VERSION=.*$/VERSION=\"'${VERSION}'\"/g'
@@ -69,7 +69,7 @@ then
 		eval ${SED} \'${SEDCMD}\' ${i}
 	done
 
-	tar zcf ../${PAYLOAD}.tgz --exclude='._*' --exclude='.svn' --exclude='.DS_Store' --exclude='*.bak' --exclude='*~' ./*
+	tar zcf ../${PAYLOAD}.tgz --exclude='._*' --exclude='.svn' --exclude='.DS_Store' --exclude='*.bak' --exclude="./${PAYLOAD}.tgz" --exclude='*~' ./*
 	cd ..
 
 	if [[ -e ${PAYLOAD}.tgz ]]; then
