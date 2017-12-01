@@ -555,7 +555,7 @@ sub get_blacklist {
           cols   => $cols,
           eof    => qq{\n},
           logsys => sprintf(
-            qq{Processed %s %s (%s rejected) from %s (%s orig.)} =>
+            qq{Processed %s %s (%s rejects) from %s (%s orig.)} =>
               @{ $cfg->{$area} }{qw(unique type duplicates icount records)}
           ),
           msg_str => sprintf(
@@ -621,7 +621,7 @@ sub get_blacklist {
             eof    => qq{\n},
             logsys => q{},
             msg_str =>
-              qq{Flagged domains command set written to: $cfg->{flg_file}},
+              qq{Wrote flagged domains command to: $cfg->{flg_file}},
             msg_typ => q{INFO},
             show    => $TRUE,
           }
@@ -1008,11 +1008,13 @@ sub setup {
 
   if ( !-e qq{$cfg->{postcfgd}/$cfg->{postcfg}} ) {
 
+    # TODO
     # Install post-configuration install script
+    # For testing, the execute permissions have been disabled
     exec_command(
       {
         cmd =>
-          qq{install -o root -g vyattacfg -m 0755 $cfg->{postcfg} "$cfg->{postcfgd}/$cfg->{postcfg}"},
+          qq{install -o root -g vyattacfg -m 0555 $cfg->{postcfg} "$cfg->{postcfgd}/$cfg->{postcfg}"},
         exec_msg =>
           qq{Installing $name $cfg->{postcfg} to $cfg->{postcfgd}/},
         fail_msg =>
@@ -1184,8 +1186,8 @@ sub write_file {
   exec_command(
     {
       cmd      => qq{chmod 0755 $input->{file}},
-      exec_msg => qq{Resetting $input->{file} permissions},
-      fail_msg => qq{Unable to reset $input->{file} permissions},
+      exec_msg => qq{Resetting $input->{file} perms},
+      fail_msg => qq{Unable to reset $input->{file} perms},
     }
   );
 
