@@ -485,10 +485,12 @@ LINE:
 # Get lists from web servers
 sub get_url {
   my $input = shift;
-  my $ua    = HTTP::Tiny->new;
-  $ua->agent(
-    q{Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/601.1.56}
-  );
+  my $agent
+    = q{Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11) AppleWebKit/601.1.56},
+    q{ (KHTML, like Gecko ) Version / 9.0 Safari / 601.1.56};
+
+  my $ua
+    = HTTP::Tiny->new( agent => $agent, verify_SSL => 1 )->get( $input->{url} );
 
   $input->{prefix} =~ s/^["](?<UNCMT>.*)["]$/$+{UNCMT}/g;
   my $re = {
@@ -497,14 +499,14 @@ sub get_url {
     SPLIT  => qr{\R|<br \/>}oms,
   };
 
-  my $get = $ua->get( $input->{url} );
+#   my $get = $ua->get( $input->{url} );
 
-  if ( $get->{success} ) {
+  if ( $ua->{success} ) {
     $input->{success} = 1;
     $input->{data}    = {
       map { my $key = $_; lc($key) => 1 }
         grep { $_ =~ /$re->{SELECT}/ } split /$re->{SPLIT}/,
-      $get->{content}
+      $ua->{content}
     };
     return $input;
   }
@@ -512,13 +514,13 @@ sub get_url {
     log_msg(
       {
         logsys  => q{},
-        msg_str => qq{get_url: $get->{status}: $get->{reason}: $get->{content}},
+        msg_str => qq{get_url: $ua->{status}: $ua->{reason}: $ua->{content}},
         msg_typ => q{ERROR},
       }
     );
-    $input->{data} = { 1 => $get->{content} };
+    $input->{data} = { 1 => $ua->{content} };
     @{$input}{qw{content reason status success}}
-      = @{$get}{qw{content reason status success}};
+      = @{$ua}{qw{content reason status success}};
     return $input;
   }
 }

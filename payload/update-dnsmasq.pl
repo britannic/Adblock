@@ -403,7 +403,7 @@ sub main {
         {
           cols   => $cols,
           logsys => sprintf(
-            qq{Processed %s %s (%s rejected) from %s (%s orig.) lines},
+            qq{Processed %s %s (%s rejects) from %s (%s orig.) lines},
             @{ $cfg->{$area} }{qw(unique type duplicates icount records)}
           ),
           msg_str => sprintf(
@@ -463,7 +463,7 @@ sub main {
             cols   => $cols,
             logsys => q{},
             msg_str =>
-              qq{Flagged domains command set written to: $cfg->{flg_file}},
+              qq{Wrote flagged domains command to: $cfg->{flg_file}},
             msg_typ => q{INFO},
             show    => $show,
           }
