@@ -25,7 +25,9 @@ export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
 export COPYFILE_DISABLE=true
 
 PWD=$(pwd)
-VERSION=$(grep 'our $VERSION' ${PWD}/payload/lib/EdgeOS/DNS/Blacklist.pm | gsed 's/^our $VERSION = q{\(.*\)};/\1/')
+VERSION=$(cat VERSION)
+OLDVERSION=$(cat OLDVERSION)
+PMVER='s/^our $VERSION = q{'${OLDVERSION}'};/our $VERSION = q{'${VERSION}'};/'
 NAME='dnsmasq_blklist'
 DROPBOX="$HOME/Dropbox/EdgeOS"
 BLACKLIST="${NAME}.${VERSION}."
@@ -37,12 +39,11 @@ SED='gsed -i.bak'
 SEDCMD='s/Copyright (C) 20../Copyright (C) '$(date +"%Y")'/g'
 SEDVER='s/^VERSION=.*$/VERSION=\"'${VERSION}'\"/g'
 UPDATE_CPYRT=(LICENSE decompress README.md)
-UPDATE_RDME_VER='s/install_${NAME}\.v\([0-9]*\.[0-9]*\.[0-9]*\)\(.*$\)/install_${NAME}.v'${VERSION}'\2/g'
-# UPDATE_RDME_VER='s/\(install_${NAME}\.v\)\(?'version'\d\(?:\.\d\)+\)\(?'stage'fc|a|b\)?\(?'dev'\(?\(stage\)\d+\)\)/\1'${VERSION}'\2/g'
-# UPDATE_RDME_VER="qr{s/(install_dnsmasq_blklist.v)(?'version'\d(?:\.\d)+)(?'stage'fc|a|b)?(?'dev'(?(stage)\d+))/\1"${VERSION}"/g}"
+UPDATE_RDME_VER='s/install_'${NAME}'\.v'${OLDVERSION}'/install_'${NAME}'.v'${VERSION}'/g'
 
 if [[ -e "${0##*/}" ]]
 then
+	cp VERSION OLDVERSION
 	BASEDIR="$(pwd)"
 	[[ -f ${PAYLOAD}.tgz ]] && rm ${PAYLOAD}.tgz
 	[[ -f ${BLACKLIST}setup.tgz ]] && rm ${BLACKLIST}setup.tgz
@@ -53,7 +54,7 @@ then
 	cd ..
 
 # Update README.md instructions with current version
-# 	perl -ne ${UPDATE_RDME_VER} README.md
+	eval ${SED} \'${PMVER}\' ${LIB}
 	eval ${SED} \'${UPDATE_RDME_VER}\' README.md
 	eval ${SED} \'${SEDVER}\' decompress decompress_install_Adblock
 

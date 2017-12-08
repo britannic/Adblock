@@ -31,19 +31,24 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Installation
 
 - To install:
-    * download install_dnsmasq_blklist.v3.6.5a1.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.6.5a1.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/187770/2/install_dnsmasq_blklist.v3.6.5a1.tgz
+    * download install_dnsmasq_blklist.v3.7.0.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.7.0.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/187770/2/install_dnsmasq_blklist.v3.7.0.tgz
         - cd /tmp
-        - tar zxvf ./install_dnsmasq_blklist.v3.6.5a1.tgz
-        - bash ./install_dnsmasq_blklist.v3.6.5a1
+        - tar zxvf ./install_dnsmasq_blklist.v3.7.0.tgz
+        - bash ./install_dnsmasq_blklist.v3.7.0
         - select menu option #0 if installing for the first time
         - select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #1
 
 - Uninstall
-    * sudo /tmp/install_dnsmasq_blklist.v3.6.5a1
+    * sudo /tmp/install_dnsmasq_blklist.v3.7.0
         - select option #1
 
 ## Release Notes
+### Version 3.7.0
+- Updates
+    - Added code to update HTTP::Tiny Perl library
+    - Updated get_url to verify SSL/TLS certificates
+
 ### Version 3.6.5
 - Enhancements
     - Updated to set directory group ownership for /opt/vyatta/config to prevent issues  attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
