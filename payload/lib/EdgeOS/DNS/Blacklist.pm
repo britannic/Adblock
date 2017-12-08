@@ -94,7 +94,7 @@ our @EXPORT_OK = (
     }
 );
 our $NAME    = q{dnsmasq_blklist};
-our $VERSION = q{3.6.5};
+our $VERSION = q{3.6.5a1};
 our $TRUE;
 *TRUE = \1;
 our $FALSE;
@@ -515,7 +515,7 @@ sub get_url {
       {
         logsys  => q{},
         msg_str => qq{get_url: $ua->{status}: $ua->{reason}: $ua->{content}},
-        msg_typ => q{ERROR},
+        msg_typ => q{WARNING},
       }
     );
     $input->{data} = { 1 => $ua->{content} };

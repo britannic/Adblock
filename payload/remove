@@ -1121,6 +1121,28 @@ LINE:
     )
     or die qq{Unable to repair active configuration directory permissions!};
 
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      logsys  => q{},
+      msg_str => qq{Installing dnsmasq integration templates},
+      msg_typ => q{INFO},
+      show    => $TRUE,
+    }
+  );
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      logsys  => q{},
+      msg_str => qq{Updating software repository and fetching HTTP:Tiny Perl Library...},
+      msg_typ => q{INFO},
+      show    => $TRUE,
+    }
+  );
+
   # Run configure and execute the commands
   exec_shell( { commands => \@commands } )
     or die q{Unable to execute blacklist configuration commands!};

@@ -311,10 +311,9 @@ sub main {
             {
               cols                             => $cols,
               logsys                           => q{},
-              msg_str                          => sprintf
+              msg_str                          => sprintf(
                 q{%s lines received from: %s } => $rec_count,
-              $data->{host}
-              ,
+              $data->{host}),
               msg_typ => q{INFO},
               show    => $show,
             }

@@ -31,17 +31,17 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Installation
 
 - To install:
-    * upload install_dnsmasq_blklist.v3.6.5.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.6.5.tgz
+    * download install_dnsmasq_blklist.v3.6.5a1.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.6.5a1.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/187770/2/install_dnsmasq_blklist.v3.6.5a1.tgz
         - cd /tmp
-        - sudo tar zxvf ./install_dnsmasq_blklist.v3.6.5.tgz
-        - bash ./install_dnsmasq_blklist.v3.6.5
-        - select menu option #1 if installing for the first time
-        - select menu option #2 to completely remove blacklisting if you have a previous version, then run install again using option #1
+        - tar zxvf ./install_dnsmasq_blklist.v3.6.5a1.tgz
+        - bash ./install_dnsmasq_blklist.v3.6.5a1
+        - select menu option #0 if installing for the first time
+        - select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #1
 
 - Uninstall
-    * sudo /tmp/install_dnsmasq_blklist.v3.6.5
-        - select option #2
+    * sudo /tmp/install_dnsmasq_blklist.v3.6.5a1
+        - select option #1
 
 ## Release Notes
 ### Version 3.6.5

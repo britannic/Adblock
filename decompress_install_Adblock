@@ -3,7 +3,7 @@
 # Description: Scripts for creating dnsmasq configuration files to redirect dns
 # look ups to alternative IPs (blackholes, pixel servers etc.)
 
-VERSION="3.6.5"
+VERSION="3.6.5a1"
 
 TITLE="dnsmasq Blacklist Integration v${VERSION}"
 

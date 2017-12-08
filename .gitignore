@@ -11,3 +11,5 @@ browse.VC.db
 .DS_Store
 
 install_adblock.v*
+
+*.regexrx
