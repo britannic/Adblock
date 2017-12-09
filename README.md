@@ -1,7 +1,7 @@
 # UBNT EdgeMax dnsmasq Blacklist and Adware Blocking
 [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
 
-NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
+NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks�
 
 ## Copyright
 * Copyright (C) 2017 Helm Rock Consulting
@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 - To install:
     * download install_dnsmasq_blklist.v3.7.0.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.7.0.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/187770/2/install_dnsmasq_blklist.v3.7.0.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.7.0.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/66/install_dnsmasq_blklist.v3.7.0.tgz
         - cd /tmp
         - tar zxvf ./install_dnsmasq_blklist.v3.7.0.tgz
         - bash ./install_dnsmasq_blklist.v3.7.0
@@ -47,7 +47,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ### Version 3.7.0
 - Updates
     - Added code to update HTTP::Tiny Perl library
-    - Updated get_url to verify SSL/TLS certificates
+    - Updated get_url() to verify SSL/TLS certificates
 ---
 ### Version 3.6.5
 - Enhancements
@@ -297,13 +297,13 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Logging to /var/log/update-blacklists-dnsmasq.log
     - --debug option: prints status messages
     - Additional download sources added to the default lists
-    - Added retry logic for download sources that time out (inspired by @mseeEngineer﻿)
+    - Added retry logic for download sources that time out
     - Task scheduler update interval is now every 6 hours, as some of the sources change hourly (configure interval using "set system task-scheduler task update_blacklists interval"
     - Status line retains previous downloads for more detail
 ---
 ### v3.12:
 - Fixes:
-    - Fixed bug reported by @soehest﻿ where certain FQDNs were being rejected by the stream processor.
+    - Fixed bug reported by @soehest where certain FQDNs were being rejected by the stream processor.
 ---
 ### v3.10:
 - Enhancements:
