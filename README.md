@@ -42,25 +42,25 @@ Unless required by applicable law or agreed to in writing, software distributed 
 - Uninstall
     * sudo /tmp/install_dnsmasq_blklist.v3.7.0
         - select option #1
-
+---
 ## Release Notes
 ### Version 3.7.0
 - Updates
     - Added code to update HTTP::Tiny Perl library
     - Updated get_url to verify SSL/TLS certificates
-
+---
 ### Version 3.6.5
 - Enhancements
     - Updated to set directory group ownership for /opt/vyatta/config to prevent issues  attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
     - Improved menu driven install
     - Added /config/postconfig.d/Install_dnsmasq_blklist
     - Added logic to prevent downloading from web sources with invalid SSL certificates
-
+---
 ### Version 3.6.4.2:
 - Enhancements and minor bug fix
     - Added experimental support for UniFi Security Gateways (version v4.3.49 and above)
     - Fixed a minor version display bug when running "update-dnsmasq.pl -version"
-
+---
 ### Version 3.6.4.1:
 - Fix
     - Added back YoYo source as it is back online
