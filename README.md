@@ -31,24 +31,31 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Installation
 
 - To install:
-    * download install_dnsmasq_blklist.v3.7.0.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.7.0.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/66/install_dnsmasq_blklist.v3.7.0.tgz
+    * download install_dnsmasq_blklist.v3.7.1.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.7.1.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/67/install_dnsmasq_blklist.v3.7.1.tgz
         - cd /tmp
-        - tar zxvf ./install_dnsmasq_blklist.v3.7.0.tgz
-        - bash ./install_dnsmasq_blklist.v3.7.0
+        - tar zxvf ./install_dnsmasq_blklist.v3.7.1.tgz
+        - bash ./install_dnsmasq_blklist.v3.7.1
         - select menu option #0 if installing for the first time
         - select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #1
 
 - Uninstall
-    * sudo /tmp/install_dnsmasq_blklist.v3.7.0
+    * sudo /tmp/install_dnsmasq_blklist.v3.7.1
         - select option #1
 ---
 ## Release Notes
+### Version 3.7.1
+- Patch
+    - Removed Debian Wheezy-Backports repository
+    - Added dropbox.com blacklist exclusions as some blocklists were false flagging it
+---
+
 ### Version 3.7.0
 - Updates
     - Added code to update HTTP::Tiny Perl library
     - Updated get_url() to verify SSL/TLS certificates
 ---
+
 ### Version 3.6.5
 - Enhancements
     - Updated to set directory group ownership for /opt/vyatta/config to prevent issues  attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
@@ -56,34 +63,41 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Added /config/postconfig.d/Install_dnsmasq_blklist
     - Added logic to prevent downloading from web sources with invalid SSL certificates
 ---
+
 ### Version 3.6.4.2:
 - Enhancements and minor bug fix
     - Added experimental support for UniFi Security Gateways (version v4.3.49 and above)
     - Fixed a minor version display bug when running "update-dnsmasq.pl -version"
 ---
+
 ### Version 3.6.4.1:
 - Fix
     - Added back YoYo source as it is back online
 ---
+
 ### v3.6.4:
 - Fixes
     - Removed YoYo source as it is no longer active
     - Tested with EdgeOS v1.9.7+hotfix.4
 ---
+
 ### v3.6.3.3:
 - Enhancements
     - Additional exclusions added to the blacklist commands file
 ---
+
 ### v3.6.3.2:
 - Fixes
     - Rewrote version checker to handle EdgeOS versions with an additional sub releases, i.e. v1.9.1.1, v1.9.1.1.1, etc
     - Added additional logic to skip testing if main installer exited with an error
 ---
+
 ### v3.6.3.1:
 - Fixes
     - Updated blacklist exclusions and includes
     - Removed volkerschatz as a source, since the blacklisting service is no longer offered
 ---
+
 ### v3.6:
 - Enhancements
     - Ability to add a source that uses a local file instead of HTTP
@@ -156,12 +170,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 - Additional excludes added to blacklist configuration list
 ---
+
 ### v3.5.5:
 - Updates/fixes include:
     - Added clarifying explanation for failed IP tests; advises user to ignore if router resolves upstream DNS and not locally
     - Fixed minor bug with command shell redirection
     - Additional excludes added to blacklist configuration list
 ---
+
 ### v3.5.3:
 - Updates/fixes include:
     - Added code to fix 'set' failures if /opt/vyatta/active/service/dns/forwarding/ group ownership isn't writable for the operator
@@ -178,6 +194,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 | 5 | PURGE   |Clean up stale config sessions|
 | 5 | QUIT    |Exit the installer|
 ---
+
 ### v3.5:
 - Updates/fixes include:
     - Global exclude is now available ([set service dns forwarding blacklist exclude ...])
@@ -190,6 +207,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Installer includes these new options:
     - Non-essential functions have been pruned, command line switches reduced to:
 ---
+
 ### v3.3.2: What is new:
 - Non-essential functions have been removed
     - Command line switches reduced to:
@@ -264,6 +282,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Optional -f config.boot parser has been completely rewritten, so that the XorpConfigParser.pm module is no longer required (saves on memory overhead and compilation time)
     - Over 70% of the code has been rewritten or updated
 ---
+
 ### v3.24d:
 - Updates include:
     - 'hosts' exclusions now incorporates 'domains' exclusions and blacklists
@@ -280,6 +299,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Useragent: HTTP/HTTPS handling uses useragent for improved error/timeout control
     - Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during boot time
 ---
+
 ### v3.22rc1:
 - Updates include:
     - Fixes excluded FQDNs by using precise matching instead of fuzzy (i.e. 1.domain.tld won't also exclude b1.domain.tld)
@@ -292,6 +312,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Useragent: HTTP/HTTPS handling uses useragent for improved error/timeout control
     - Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during router boot time
 ---
+
 ### v3.15:
 - Enhancements:
     - Logging to /var/log/update-blacklists-dnsmasq.log
@@ -301,14 +322,17 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Task scheduler update interval is now every 6 hours, as some of the sources change hourly (configure interval using "set system task-scheduler task update_blacklists interval"
     - Status line retains previous downloads for more detail
 ---
+
 ### v3.12:
 - Fixes:
     - Fixed bug reported by @soehest where certain FQDNs were being rejected by the stream processor.
 ---
+
 ### v3.10:
 - Enhancements:
     - Now supports https:// source URLs and improved regex handling in the stream processing engine.
 ---
+
 ### v3.00:
 - Enhancements:
     - No longer requires regex strings, just the line prefix/preamble before the hostname in the download. If a version of ADBlock was installed previously, you will need to select option 2 to remove it and then install this version. This is necessary to ensure the configure paths are correctly set up for the new prefix option which replaces the regex string.
