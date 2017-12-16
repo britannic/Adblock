@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 - To install:
     * download install_dnsmasq_blklist.v3.7.2.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.7.2.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/67/install_dnsmasq_blklist.v3.7.2.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.7.2.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/68/install_dnsmasq_blklist.v3.7.2.tgz
         - cd /tmp
         - tar zxvf ./install_dnsmasq_blklist.v3.7.2.tgz
         - bash ./install_dnsmasq_blklist.v3.7.2
