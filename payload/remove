@@ -23,6 +23,7 @@
 # USE AT YOUR OWN RISK!
 #
 
+use Cwd qw(getcwd);
 use feature qw(switch);
 use File::Basename;
 use Getopt::Long;
@@ -58,6 +59,7 @@ use EdgeOS::DNS::Blacklist (
     }
 );
 
+my $SHOW    = $TRUE;
 my $cols    = get_cols();
 my $prg     = { errors => 0, calls => 0, };
 my $program = basename($0);
@@ -117,6 +119,10 @@ my $cfg     = {
     unique     => 0,
   },
 };
+
+# Don't send output to screen if running from post-boot
+if ( getcwd eq '/config/scripts/post-config.d' ) { $SHOW = $FALSE }
+
 ############################### script runs here ###############################
 exit if &main();
 exit 1;
@@ -130,7 +136,7 @@ sub delete_file {
   if ( -e $input->{file} ) {
     log_msg(
       {
-        show    => $TRUE,
+        show    => $SHOW,
         cols    => $cols,
         eof     => qq{\n},
         logsys  => q{},
@@ -152,7 +158,7 @@ sub delete_file {
         msg_str => sprintf( q{Unable to delete %s} => $input->{file} ),
         msg_typ => q{WARNING},
         logsys  => q{},
-        show    => $TRUE,
+        show    => $SHOW,
       }
     );
     return;
@@ -185,7 +191,7 @@ sub exec_command {
       logsys  => q{},
       msg_str => $input->{exec_msg},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
@@ -199,7 +205,7 @@ sub exec_command {
         logsys  => qq{$output},
         msg_str => $input->{fail_msg} . qq{\n$output\n},
         msg_typ => q{ERROR},
-        show    => $TRUE,
+        show    => $SHOW,
       }
     );
     $prg->{fail}->{ $prg->{errors}++ } = $input->{cmd};
@@ -267,7 +273,7 @@ sub exec_shell {
                 logsys  => q{},
                 msg_str => $cli_out,
                 msg_typ => q{ERROR},
-                show    => $TRUE,
+                show    => $SHOW,
               }
             );
           }
@@ -287,7 +293,7 @@ sub exec_shell {
                 logsys  => q{},
                 msg_str => $cli_err,
                 msg_typ => q{ERROR},
-                show    => $TRUE,
+                show    => $SHOW,
               }
             );
           }
@@ -395,7 +401,7 @@ sub get_blacklist {
                   $host
                 ),
                 msg_typ => q{ERROR},
-                show    => $TRUE,
+                show    => $SHOW,
               }
             );
             next NEXT;
@@ -409,7 +415,7 @@ sub get_blacklist {
               msg_str =>
                 sprintf( q{Downloading %s blacklist from %s} => $area, $host ),
               msg_typ => q{INFO},
-              show    => $TRUE,
+              show    => $SHOW,
             }
           );
 
@@ -462,7 +468,7 @@ sub get_blacklist {
                 q{%s lines received from: %s } => $rec_count, $data->{host}
               ),
               msg_typ => q{INFO},
-              show    => $TRUE,
+              show    => $SHOW,
             }
           );
 
@@ -543,7 +549,7 @@ sub get_blacklist {
                 logsys  => q{},
                 msg_str => qq{Zero records processed from $data->{src}!},
                 msg_typ => q{WARNING},
-                show    => $TRUE,
+                show    => $SHOW,
               }
             );
           }
@@ -565,7 +571,7 @@ sub get_blacklist {
             qq{\n}
           ),
           msg_typ => q{INFO},
-          show    => $TRUE,
+          show    => $SHOW,
         }
       );
 
@@ -589,7 +595,7 @@ sub get_blacklist {
                 $value
               ),
               msg_typ => q{INFO},
-              show    => $TRUE,
+              show    => $SHOW,
             }
           );
           push @flagged_domains => qq{$key # $value times};
@@ -623,7 +629,7 @@ sub get_blacklist {
             msg_str =>
               qq{Wrote flagged domains command to: $cfg->{flg_file}},
             msg_typ => q{INFO},
-            show    => $TRUE,
+            show    => $SHOW,
           }
         );
       }
@@ -647,6 +653,7 @@ sub get_blacklist {
 
 # Main function
 sub main {
+
   # Start logging
   my $log_name = qq{$program};
   openlog( $program, q{}, LOG_DAEMON );
@@ -662,7 +669,7 @@ sub main {
             msg_str =>
               qq{Installing $name $program v$VERSION support},
             msg_typ => q{INFO},
-            show    => $TRUE,
+            show    => $SHOW,
           }
         );
         if ( setup() ) {
@@ -673,7 +680,7 @@ sub main {
               logsys  => q{},
               msg_str => qq{$name v$VERSION installation successful},
               msg_typ => q{INFO},
-              show    => $TRUE,
+              show    => $SHOW,
             }
           );
         }
@@ -686,7 +693,7 @@ sub main {
                 logsys  => q{},
                 msg_str => qq{$prg->{fail}->{$key} failed!},
                 msg_typ => q{ERROR},
-                show    => $TRUE,
+                show    => $SHOW,
               }
             );
           }
@@ -700,7 +707,7 @@ sub main {
                 . qq{\nReview /var/log/messages\n}
                 . qq{$prg->{errors}/$prg->{errors} calls failed},
               msg_typ => q{ERROR},
-              show    => $TRUE,
+              show    => $SHOW,
             }
           );
           say q{};
@@ -716,7 +723,7 @@ sub main {
             msg_str =>
               qq{Edgemax $edgeOS->{version} is not supported, upgrade!},
             msg_typ => q{ERROR},
-            show    => $TRUE,
+            show    => $SHOW,
           }
         );
         say q{};
@@ -732,7 +739,7 @@ sub main {
             logsys  => q{},
             msg_str => qq{$name v$VERSION removal successful},
             msg_typ => q{INFO},
-            show    => $TRUE,
+            show    => $SHOW,
           }
         );
       }
@@ -745,7 +752,7 @@ sub main {
               logsys  => q{},
               msg_str => qq{$prg->{fail}->{$key} failed!},
               msg_typ => q{ERROR},
-              show    => $TRUE,
+              show    => $SHOW,
             }
           );
         }
@@ -759,7 +766,7 @@ sub main {
               . qq{\nReview /var/log/messages\n}
               . qq{$prg->{errors}/$prg->{errors} calls failed},
             msg_typ => q{ERROR},
-            show    => $TRUE,
+            show    => $SHOW,
           }
         );
         say q{};
@@ -800,7 +807,7 @@ sub remove {
       logsys  => q{},
       msg_str => q{Removing blacklist support files and scripts...},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
@@ -815,7 +822,7 @@ sub remove {
       logsys  => q{},
       msg_str => q{Checking active configuration directory permissions},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
@@ -834,7 +841,7 @@ sub remove {
       logsys  => q{},
       msg_str => qq{Removing $name sources and task scheduler entries},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
@@ -871,7 +878,7 @@ sub remove {
           logsys  => q{},
           msg_str => qq{Unable to remove $name configuration templates},
           msg_typ => q{ERROR},
-          show    => $TRUE,
+          show    => $SHOW,
         }
       );
     }
@@ -896,7 +903,7 @@ sub remove {
           logsys  => q{},
           msg_str => qq{Unable to remove $name perl library},
           msg_typ => q{ERROR},
-          show    => $TRUE,
+          show    => $SHOW,
         }
       );
     }
@@ -921,7 +928,7 @@ sub remove {
           logsys  => q{},
           msg_str => qq{Unable to remove $name perl library},
           msg_typ => q{ERROR},
-          show    => $TRUE,
+          show    => $SHOW,
         }
       );
     }
@@ -963,7 +970,7 @@ sub setup {
         msg_str =>
           qq{Removing stale blacklist files from $cfg->{dmasq_d}/},
         msg_typ => q{INFO},
-        show    => $TRUE,
+        show    => $SHOW,
       }
     );
 
@@ -1010,7 +1017,6 @@ sub setup {
 
     # TODO
     # Install post-configuration install script
-    # For testing, the execute permissions have been disabled
     exec_command(
       {
         cmd =>
@@ -1040,7 +1046,7 @@ sub setup {
       logsys  => q{},
       msg_str => qq{Checking active configuration directory permissions},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
@@ -1070,7 +1076,7 @@ sub setup {
       logsys  => q{},
       msg_str => qq{Creating default $name sources and task scheduler entries},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
@@ -1099,6 +1105,7 @@ LINE:
   push @commands => qq{$save\n};
   push @commands => qq{$end\n};
   push @commands => qq{sudo apt-get -qq update\n};
+  push @commands => qq{sudo apt-get -f -qq -y install apt-utils\n};
   push @commands => qq{sudo apt-get -f -qq -y install libhttp-tiny-perl\n};
 
   log_msg(
@@ -1108,7 +1115,7 @@ LINE:
       logsys  => q{},
       msg_str => qq{Checking active configuration directory permissions},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
@@ -1128,18 +1135,19 @@ LINE:
       logsys  => q{},
       msg_str => qq{Installing dnsmasq integration templates},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
   log_msg(
     {
-      cols    => $cols,
-      eof     => qq{\n},
-      logsys  => q{},
-      msg_str => qq{Updating software repository and fetching HTTP:Tiny Perl Library...},
+      cols   => $cols,
+      eof    => qq{\n},
+      logsys => q{},
+      msg_str =>
+        qq{Updating software repository and fetching HTTP:Tiny Perl Library...},
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 
@@ -1197,7 +1205,7 @@ sub write_file {
       logsys  => q{},
       msg_str => sprintf( q{Saving %s} => basename( $input->{file} ) ),
       msg_typ => q{INFO},
-      show    => $TRUE,
+      show    => $SHOW,
     }
   );
 

@@ -24,7 +24,7 @@ tail -n+${ARCHIVE} $0 | tar xz -C ${TMPDIR}
 
 cd "${TMPDIR}"
 
-./setup
+./setup  2>&1 > /dev/null &
 
 cd ${CDIR}
 rm -rf ${TMPDIR}
