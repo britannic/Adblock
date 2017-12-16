@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 * Any FQDN in the blacklist will force dnsmasq to return the configured dns redirect IP address
 
 ## Compatibility
-* update-dnsmasq.pl has been tested on the EdgeRouter Lite family of routers, versions v1.7.0-v1.9.7+hotfix.4
+* update-dnsmasq.pl has been tested on the EdgeRouter Lite and ER-X family of routers, versions v1.7.0-v1.9.7+hotfix.4
 * Since the EdgeOS is a fork and port of Vyatta 6.3, this script could be adapted to work on VyOS and Vyatta derived ports
 
 ## Installation
@@ -43,6 +43,15 @@ Unless required by applicable law or agreed to in writing, software distributed 
     * /tmp/install_dnsmasq_blklist.v3.7.2
         - select option #1
 ---
+
+## Release Notes
+### Version 3.7.2
+- Patch
+    - Added a delete for the now unsupported Debian Wheezy-Backports repository
+    - Add apt-utils download to ensure new TLS/SSL Perl libs are installed
+    - Tested on the ER-X with EdgeOS 1.9.7.hotfix.4
+---
+
 ## Release Notes
 ### Version 3.7.1
 - Patch
