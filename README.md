@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 - To install:
     * download install_dnsmasq_blklist.v3.7.3.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.7.3.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/68/install_dnsmasq_blklist.v3.7.3.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.7.3.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/69/install_dnsmasq_blklist.v3.7.3.tgz
         - cd /tmp
         - tar zxvf ./install_dnsmasq_blklist.v3.7.3.tgz
         - bash ./install_dnsmasq_blklist.v3.7.3
@@ -42,6 +42,13 @@ Unless required by applicable law or agreed to in writing, software distributed 
 - Uninstall
     * /tmp/install_dnsmasq_blklist.v3.7.3
         - select option #1
+---
+
+## Release Notes
+### Version 3.7.3
+- Patch
+    - Added a generic delete for the now unsupported Debian Wheezy-Backports repository
+    - Tested on the ER-X with EdgeOS 1.9.7.hotfix.4
 ---
 
 ## Release Notes
