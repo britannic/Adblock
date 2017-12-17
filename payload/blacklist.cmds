@@ -125,7 +125,7 @@ set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1	 
 set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
 set service dns forwarding blacklist hosts source yoyo description 'Fully Qualified Domain Names only - no prefix to strip'
 set service dns forwarding blacklist hosts source yoyo prefix ''
-delete system package repository wheezy-updates
+delete system package repository
 set service dns forwarding blacklist hosts source yoyo url 'http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext'
 set system package repository wheezy components 'main contrib non-free'
 set system package repository wheezy distribution wheezy
