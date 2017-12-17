@@ -94,7 +94,7 @@ our @EXPORT_OK = (
     }
 );
 our $NAME    = q{dnsmasq_blklist};
-our $VERSION = q{3.7.2};
+our $VERSION = q{3.7.3};
 our $TRUE;
 *TRUE = \1;
 our $FALSE;
