@@ -99,7 +99,7 @@ then
 	[[ -d "${DROPBOX}/" ]] && install -m 0755 ${INSTALL}.tgz "${DROPBOX}/"
 
 # scp the build to our test router for debugging
-	[[ ${1} ]] && /usr/bin/scp "${BASEDIR}"/${INSTALL} ${1}@unms-server.ashcreek.home:/tmp/${INSTALL}
+	[[ ${1} ]] && /usr/bin/scp "${BASEDIR}"/${INSTALL} ${1}.ashcreek.home:/tmp/${INSTALL}
 else
 	echo "$(basename $0) must be run in the directory where it is located."
 fi

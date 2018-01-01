@@ -74,11 +74,11 @@ my $set     = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set};
 my $cfg     = {
   actv     => q{/opt/vyatta/config/active/service/dns/forwarding/},
   cfg_dir  => q{/opt/vyatta/config},
+  cmdablk  => q{./blacklist.cmds},
   cnf_ext  => q{.conf},
   disabled => 0,
   dmasq_d  => q{/etc/dnsmasq.d},
   EdgeOS   => q{EdgeOS},
-  file     => q{./blacklist.cmds},
   flg_file => q{/var/log/update-dnsmasq-flagged.cmds},
   flg_lvl  => 5,
   group    => q{users},
@@ -121,7 +121,7 @@ my $cfg     = {
 };
 
 # Don't send output to screen if running from post-boot
-if ( getcwd eq '/config/scripts/post-config.d' ) { $SHOW = $FALSE }
+if ( getcwd eq $cfg->{postcfgd} ) { $SHOW = $FALSE }
 
 ############################### script runs here ###############################
 exit if &main();
@@ -251,10 +251,10 @@ sub exec_shell {
   close $cmd_err if $cmd_err;
 
   my $re = {
-    info => qr{(?:Nothing to delete)},
-    warnings =>
-      qr{(?:The specified configuration node is not valid\n|Delete failed\n)},
     errors => qr{(?:aborted|error|failed|failure)}i,
+    info => qr{(?:Installing|Restarting|\[\s|Starting|Stopping)},
+    saving => qr{(?:^Saving configuration)},
+    warnings => qr{(?:^Delete failed\n|sh: line|Nothing to delete|The specified configuration node already exists|The specified configuration node is not valid\n|Updating|Upgrading)},
   };
 
   for my $feed ( \%cmds_out, \%cmd_errs ) {
@@ -262,8 +262,32 @@ sub exec_shell {
       $prg->{calls}++;
       if ($cli_out) {
         for ($cli_out) {
+          $cli_out =~ s/\R//g;
           when (/$re->{warnings}/) { }
-          when (/$re->{info}/)     { }
+          when (/$re->{info}/) {
+            log_msg(
+              {
+                cols    => $cols,
+                eof     => qq{\n},
+                logsys  => q{},
+                msg_str => $cli_out,
+                msg_typ => q{INFO},
+                show    => $SHOW,
+              }
+            );
+          }
+          when (/$re->{saving}/) {
+            log_msg(
+              {
+                cols    => $cols,
+                eof     => qq{\n},
+                logsys  => q{},
+                msg_str => $cli_out,
+                msg_typ => q{INFO},
+                show    => $SHOW,
+              }
+            );
+          }
           when (/$re->{errors}/) {
             $prg->{fail}->{ $prg->{errors}++ } = $cli_out;
             log_msg(
@@ -277,7 +301,7 @@ sub exec_shell {
               }
             );
           }
-          default { print $cli_out; }
+          default                  { print $cli_out; }
         }
       }
       elsif ($cli_err) {
@@ -303,352 +327,6 @@ sub exec_shell {
     }
   }
   return $TRUE;
-}
-
-# Runs the subs to process the blacklist
-sub get_blacklist {
-  my $dnsmasq_svc = q{/etc/init.d/dnsmasq};
-
-  # Make sure localhost is always in the exclusions whitelist
-  $cfg->{hosts}->{exclude}->{localhost} = 1;
-
-  my $success = get_cfg_actv( { config => $cfg, show => $TRUE } );
-  die qq{FATAL: Unable to get configuration} if !$success;
-  $prg->{calls}++;
-
-  # Now proceed if blacklist is enabled
-  if ($success) {
-    my @areas;
-
-    # Add areas to process only if they contain sources and copy global excludes
-    for my $area (qw{domains hosts}) {
-      push @areas => $area if scalar keys %{ $cfg->{$area}->{src} };
-    }
-
-    # Process each area
-    my $area_count = (@areas);
-    for my $area (@areas) {
-      my ( $prefix, @threads );
-      my $max_thrds = 8;
-      my @sources   = keys %{ $cfg->{$area}->{src} };
-      while ( my ( $key, $value ) = each %{ $cfg->{exclude} } ) {
-        $cfg->{$area}->{exclude}->{$key} = $value;
-      }
-      $cfg->{$area}->{icount} = scalar keys %{ $cfg->{$area}->{blklst} } // 0;
-      @{ $cfg->{$area} }{qw{records unique}}
-        = @{ $cfg->{$area} }{qw{icount icount}};
-
-      # Remove any files that no longer have configured sources
-      my $sources_ref = {
-        map {
-          my $key = $_;
-          qq{$cfg->{dmasq_d}/$area.$key.blacklist.conf} => 1;
-          } @sources
-      };
-
-      my $files_ref = { map { my $key = $_; $key => 1; }
-          glob qq{$cfg->{dmasq_d}/$area.*blacklist.conf} };
-
-      for my $file ( keys $files_ref ) {
-        delete_file( { file => $file } )
-          if !exists $sources_ref->{$file} && $file;
-      }
-
-      # write each configured area's includes into individual dnsmasq files
-      if ( $cfg->{$area}->{icount} > 0 ) {
-        my $equals = $area ne q{domains} ? q{=/} : q{=/.};
-        write_file(
-          {
-            data => [
-              map {
-                my $value = $_;
-                sprintf(
-                  qq{%s%s%s/%s\n} => $cfg->{$area}->{target} => $equals,
-                  $value, $cfg->{$area}->{dns_redirect_ip}
-                );
-                } sort keys %{ $cfg->{$area}->{blklst} }
-            ],
-            file => qq{$cfg->{dmasq_d}/$area.pre-configured.blacklist.conf},
-          }
-        );
-      }
-
-    NEXT:
-      for my $source (@sources) {
-        my ( $file, $url )
-          = @{ $cfg->{$area}->{src}->{$source} }{ q{file}, q{url} };
-
-        # Initialize the sources counters
-        @{ $cfg->{$area}->{src}->{$source} }
-          {qw(duplicates icount records unique)} = ( 0, 0, 0, 0 );
-
-        $prefix
-          = $cfg->{$area}->{src}->{$source}->{prefix} ~~ q{http}
-          ? qr{(?:\A(?:http:|https:){1}[/]{1,2})}om
-          : $cfg->{$area}->{src}->{$source}->{prefix};
-
-        my $host;
-        if ($url) {
-          my $uri = new URI($url);
-          $host = $uri->host;
-          if ( not( $uri->scheme eq 'http' || $uri->scheme eq 'https' ) ) {
-            log_msg(
-              {
-                cols    => $cols,
-                logsys  => q{},
-                msg_str => sprintf(
-                  q{%s URL: %s incorrectly formatted} => $area,
-                  $host
-                ),
-                msg_typ => q{ERROR},
-                show    => $SHOW,
-              }
-            );
-            next NEXT;
-          }
-
-          log_msg(
-            {
-              cols   => $cols,
-              eof    => qq{\n},
-              logsys => q{},
-              msg_str =>
-                sprintf( q{Downloading %s blacklist from %s} => $area, $host ),
-              msg_typ => q{INFO},
-              show    => $SHOW,
-            }
-          );
-
-          push @threads => threads->create(
-            { context => q{list}, exit => q{thread_only} },
-            \&get_url,
-            {
-              area   => $area,
-              host   => $host,
-              prefix => $prefix,
-              src    => $source,
-              url    => $url
-            }
-          );
-        }
-        elsif ($file) {    # get file data
-          $host = $source;
-          push @threads => threads->create(
-            { context => q{list}, exit => q{thread_only} },
-            \&get_file,
-            {
-              area   => $area,
-              host   => $host,
-              file   => $file,
-              prefix => $prefix,
-              src    => $source
-            }
-          );
-        }
-        sleep 1 while ( scalar threads->list(threads::running) >= $max_thrds );
-      }
-
-      for my $thread (@threads) {
-        my $data = $thread->join();
-        if ( $data->{file} ) {
-          $data->{data}
-            = { map { my $key = $_; lc($key) => 1 } @{ $data->{data} } };
-        }
-
-        my $rec_count = scalar keys %{ $data->{data} } // 0;
-        $cfg->{$area}->{src}->{ $data->{src} }->{records} += $rec_count;
-
-        if ( exists $data->{host} && scalar $rec_count ) {
-          log_msg(
-            {
-              cols    => $cols,
-              eof     => qq{\n},
-              logsys  => q{},
-              msg_str => sprintf(
-                q{%s lines received from: %s } => $rec_count, $data->{host}
-              ),
-              msg_typ => q{INFO},
-              show    => $SHOW,
-            }
-          );
-
-          # Now process what we have received from the web host
-          $success = process_data(
-            {
-              area   => $area,
-              cols   => $cols,
-              config => $cfg,
-              data   => \%{ $data->{data} },
-              prefix => $data->{prefix},
-              show   => $TRUE,
-              src    => $data->{src}
-            }
-          );
-          $prg->{calls}++;
-          if ( !$success ) {
-            $prg->{fail}->{ $prg->{errors}++ }
-              = qq{process_data $area $data->{src}};
-          }
-
-          # Delete $data->{data} key and data
-          delete $data->{data};
-
-          # Write blacklist to file, change to domain format if area = domains
-          my $file = qq{$cfg->{dmasq_d}/$area.$data->{src}.blacklist.conf};
-          if ( keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} }
-            and $data->{success} )
-          {
-            my $equals = $area ne q{domains} ? q{=/} : q{=/.};
-            write_file(
-              {
-                data => [
-                  map {
-                    my $value = $_;
-                    sprintf(
-                      qq{%s%s%s/%s\n} => $cfg->{$area}->{target},
-                      $equals, $value, $cfg->{$area}->{dns_redirect_ip}
-                    );
-                    } sort
-                    keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} }
-                ],
-                file => $file,
-              }
-            );
-
-            # Compute statistics
-            $cfg->{$area}->{unique}
-              += scalar
-              keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} };
-            $cfg->{$area}->{duplicates}
-              += $cfg->{$area}->{src}->{ $data->{src} }->{duplicates};
-            $cfg->{$area}->{icount}
-              += $cfg->{$area}->{src}->{ $data->{src} }->{icount};
-            $cfg->{$area}->{records}
-              += $cfg->{$area}->{src}->{ $data->{src} }->{records};
-
-            # Discard the data now its written to file
-            delete $cfg->{$area}->{src}->{ $data->{src} };
-          }
-          else {
-            my @data = (
-              sprintf(
-                    qq{# No data received\n# HTTP Status: %s\n# Reason: %s\n}
-                  . qq{# Content: %s\n} => @{$data}{qw{status reason content}}
-              )
-            );
-            write_file(
-              {
-                data => \@data,
-                file => $file,
-              }
-            );
-            log_msg(
-              {
-                cols    => $cols,
-                eof     => qq{\n},
-                logsys  => q{},
-                msg_str => qq{Zero records processed from $data->{src}!},
-                msg_typ => q{WARNING},
-                show    => $SHOW,
-              }
-            );
-          }
-        }
-      }
-
-      log_msg(
-        {
-          cols   => $cols,
-          eof    => qq{\n},
-          logsys => sprintf(
-            qq{Processed %s %s (%s rejects) from %s (%s orig.)} =>
-              @{ $cfg->{$area} }{qw(unique type duplicates icount records)}
-          ),
-          msg_str => sprintf(
-            qq{Processed $c->{grn}%s$c->{clr} %s ($c->{red}%s$c->{clr} }
-              . qq{rejected) from $c->{mag}%s$c->{clr} (%s orig.)%s} =>
-              @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
-            qq{\n}
-          ),
-          msg_typ => q{INFO},
-          show    => $SHOW,
-        }
-      );
-
-      # Now lets report the domains that exceeded $cfg->{flg_lvl}
-      my @flagged_domains;
-      for my $key (
-        sort {
-          $cfg->{hosts}->{exclude}->{$b} <=> $cfg->{hosts}->{exclude}->{$a}
-        } sort keys %{ $cfg->{hosts}->{exclude} }
-        )
-      {
-        my $value = $cfg->{hosts}->{exclude}->{$key};
-        if ( $value >= $cfg->{flg_lvl} && length $key > 5 ) {
-          log_msg(
-            {
-              cols    => $cols,
-              eof     => qq{\n},
-              logsys  => q{},
-              msg_str => sprintf(
-                qq{$area blacklisted: domain %s %s times} => $key,
-                $value
-              ),
-              msg_typ => q{INFO},
-              show    => $SHOW,
-            }
-          );
-          push @flagged_domains => qq{$key # $value times};
-        }
-      }
-
-      if (@flagged_domains) {
-        $prg->{calls}++;
-        $success = write_file(
-          {
-            data => [
-              map {
-                my $value = $_;
-                sprintf(
-                  qq{set service dns forwarding blacklist domains include %s\n}
-                    => $value );
-                } @flagged_domains
-            ],
-            file => $cfg->{flg_file},
-          }
-        );
-        if ( !$success ) {
-          $prg->{fail}->{ $prg->{errors}++ } = qq{write_file $cfg->{flg_file}};
-        }
-
-        log_msg(
-          {
-            cols   => $cols,
-            eof    => qq{\n},
-            logsys => q{},
-            msg_str =>
-              qq{Wrote flagged domains command to: $cfg->{flg_file}},
-            msg_typ => q{INFO},
-            show    => $SHOW,
-          }
-        );
-      }
-
-      $area_count--;
-      say q{} if ( $area_count == 1 );    # print a final line feed
-    }
-  }
-  elsif ( $cfg->{disabled} ) {
-    for my $file ( glob qq{$cfg->{dmasq_d}/{domains,hosts}*blacklist.conf} ) {
-      delete_file( { file => $file } ) if $file;
-    }
-  }
-  else {
-    $prg->{fail}->{ $prg->{errors}++ } = qq{get_blacklist};
-  }
-
-  # Clean up the status line
-  say $c->{off}, qq{\r}, qq{ } x $cols, qq{\r};
 }
 
 # Main function
@@ -839,7 +517,7 @@ sub remove {
       cols    => $cols,
       eof     => qq{\n},
       logsys  => q{},
-      msg_str => qq{Removing $name sources and task scheduler entries},
+      msg_str => qq{Removing $name configuration},
       msg_typ => q{INFO},
       show    => $SHOW,
     }
@@ -858,6 +536,14 @@ sub remove {
   exec_shell( { commands => \@commands } )
     or die qq{Unable to execute removal commands!};
 
+  exec_command(
+    {
+      cmd =>
+        qq{sudo apt-get -qq -y remove libnet-nslookup-perl libnet-dns-perl > /dev/null 2>&1&},
+      exec_msg => qq{Removing Perl Net::Nslookup package},
+      fail_msg => qq{Unable to remove packages},
+    }
+  );
 
   # Remove configuration templates
   if ( -d qq{$cfg->{tmplts}/blacklist/} ) {
@@ -1071,42 +757,15 @@ sub setup {
 
   log_msg(
     {
-      cols    => $cols,
-      eof     => qq{\n},
-      logsys  => q{},
-      msg_str => qq{Creating default $name sources and task scheduler entries},
+      cols   => $cols,
+      eof    => qq{\n},
+      logsys => q{},
+      msg_str =>
+        qq{Creating default $name sources and task scheduler entries},
       msg_typ => q{INFO},
       show    => $SHOW,
     }
   );
-
-  open my $CF => q{<}, $cfg->{file}
-    or die qq{error: Unable to open $cfg->{file}: $!};
-
-  my @commands = (qq{$begin\n});
-
-LINE:
-  while ( my $line = <$CF> ) {
-    chomp $line;
-    for ($line) {
-      when (/^set/) {
-        $line =~ s/\Aset(?<SET>.*)\z/$set$+{SET}/ms;
-      }
-      when (/^del/) {
-        $line =~ s/\Adelete(?<DEL>.*)\z/$delete$+{DEL}/ms;
-      }
-      default { next LINE }
-    }
-    push @commands => qq{$line\n};
-  }
-  close $CF;
-
-  push @commands => qq{$commit\n};
-  push @commands => qq{$save\n};
-  push @commands => qq{$end\n};
-  push @commands => qq{sudo apt-get -qq update\n};
-  push @commands => qq{sudo apt-get -f -qq -y install apt-utils\n};
-  push @commands => qq{sudo apt-get -f -qq -y install libhttp-tiny-perl\n};
 
   log_msg(
     {
@@ -1145,28 +804,80 @@ LINE:
       eof    => qq{\n},
       logsys => q{},
       msg_str =>
-        qq{Updating software repository and fetching HTTP:Tiny Perl Library...},
+        q{Updating EdgeOS configuration, this will take a while...},
       msg_typ => q{INFO},
       show    => $SHOW,
     }
   );
 
+  open my $CF => q{<}, $cfg->{cmdablk}
+    or die qq{error: Unable to open $cfg->{cmdablk}: $!};
+
+  my @commands;
+
+LINE: while ( my $line = <$CF> ) {
+    chomp $line;
+    for ($line) {
+      when (/^#/) {
+        next LINE;
+      }
+      when (/^begin/) {
+        $line =~ s/\Abegin(?<BEGIN>.*)\z/$begin$+{BEGIN}/ms;
+      }
+      when (/^commit/) {
+        $line =~ s/\Acommit(?<COMMIT>.*)\z/$commit$+{COMMIT}/ms;
+      }
+      when (/^delete/) {
+        $line =~ s/\Adelete(?<DELETE>.*)\z/$delete$+{DELETE}/ms;
+      }
+      when (/^end/) {
+        $line =~ s/\Aend(?<END>.*)\z/$end$+{END}/ms;
+      }
+      when (/^loggit/) {
+        $line =~ s/^\S+\s*//;
+        log_msg(
+          {
+            cols    => $cols,
+            eof     => qq{\n},
+            logsys  => q{},
+            msg_str => $line,
+            msg_typ => q{INFO},
+            show    => $SHOW,
+          }
+        );
+      }
+      when (/^save/) {
+        $line =~ s/\Asave(?<SAVE>.*)\z/$save$+{SAVE}/ms;
+      }
+      when (/^set/) {
+        $line =~ s/\Aset(?<SET>.*)\z/$set$+{SET}/ms;
+      }
+      when (/^sudo/) { }
+      default        { next LINE }
+    }
+    push @commands => qq{$line\n};
+  }
+  close $CF;
+
   # Run configure and execute the commands
   exec_shell( { commands => \@commands } )
-    or die q{Unable to execute blacklist configuration commands!};
-
-  get_blacklist();
+    or die log_msg(
+    {
+      cols   => $cols,
+      eof    => qq{\n},
+      logsys => q{},
+      msg_str =>
+        q{Unable to execute blacklist configuration commands!},
+      msg_typ => q{FATAL},
+      show    => $SHOW,
+    }
+    );
 
   delete_file( { file => $cfg->{no_op} } );
 
-  exec_command(
-    {
-      cmd      => qq{service dnsmasq restart},
-      exec_msg => qq{Reloading dnsmasq configuration},
-      fail_msg => qq{Unable reload dnsmasq configuration!},
-    }
-  );
-
+#   $prg->{errors}++ if not qx{sudo $cfg->{scrpt_d}/$cfg->{script} -v\n};
+  $prg->{errors}++
+    if system( "/usr/bin/sudo", "$cfg->{scrpt_d}/$cfg->{script}", "-v" );
   if ( !$prg->{errors} ) {
     return $TRUE;
   }
