@@ -3,7 +3,7 @@ help: Add and delete blacklist blackhole IP, exclusions and URL sources
 
 end: if [[ "$COMMIT_ACTION" != "DELETE" ]]; then
         arg='-v'
-        [[ -z "${COMMIT_VIA}" ]] && arg='&> /dev/null&'
+        [[ "${BOOT}" == 'yes' ]] && arg='&> /dev/null&'
         if [[ "$VAR(./disabled/@@)" == false ]]; then
             sudo /config/scripts/update-dnsmasq.pl ${arg};
         elif [[ "$VAR(./disabled/@@)" == true ]]; then

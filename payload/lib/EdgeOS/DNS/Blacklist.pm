@@ -1,4 +1,4 @@
-# Copyright (C) 2017 by Helm Rock Consulting
+# Copyright (C) 2018 by Helm Rock Consulting
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ our @EXPORT_OK = (
     }
 );
 our $NAME    = q{dnsmasq_blklist};
-our $VERSION = q{3.7.3};
+our $VERSION = q{3.7.4};
 our $TRUE;
 *TRUE = \1;
 our $FALSE;
@@ -873,7 +873,7 @@ Neil Beadle
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2017 by Neil Beadle
+Copyright (C) 2018 by Neil Beadle
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.23.4 or,
