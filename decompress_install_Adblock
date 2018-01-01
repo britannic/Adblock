@@ -24,7 +24,9 @@ tail -n+${ARCHIVE} $0 | tar xz -C ${TMPDIR}
 
 cd "${TMPDIR}"
 
-./setup &> /dev/null&
+/bin/cli-shell-api existsActive service dns forwarding blacklist
+
+[[ ${?} ]] || ./setup &> /dev/null&
 
 cd ${CDIR}
 rm -rf ${TMPDIR}
