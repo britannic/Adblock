@@ -3,10 +3,8 @@ help: Add and delete blacklist blackhole IP, exclusions and URL sources
 
 end: if [[ "$COMMIT_ACTION" != "DELETE" ]]; then
         arg='-v'
-        [[ -f /etc/nologin ]] && arg='&'
-        if [[ "$VAR(./disabled/@@)" == false ]]; then
-            sudo /config/scripts/update-dnsmasq.pl ${arg};
-        elif [[ "$VAR(./disabled/@@)" == true ]]; then
-            sudo /config/scripts/update-dnsmasq.pl ${arg};
-        fi;
-    fi
+        [[ -f /etc/nologin ]] && arg=''
+        sudo /config/scripts/update-dnsmasq.pl ${arg};
+     else
+        sudo /config/scripts/update-dnsmasq.pl -v
+     fi
