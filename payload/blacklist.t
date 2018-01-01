@@ -30,6 +30,7 @@ use Getopt::Long;
 use HTTP::Tiny;
 use IO::Select;
 use IPC::Open3;
+use Net::Nslookup;
 use POSIX;
 use Sys::Syslog;
 use Term::ANSIColor;
@@ -52,7 +53,6 @@ use EdgeOS::DNS::Blacklist (
     get_cfg_file
     get_cols
     get_file
-    get_ip
     is_admin
     is_configure
     log_msg
@@ -183,6 +183,16 @@ sub get_files {
   }
 
   return \@files;
+}
+
+# Get an IP address from a hostname
+sub get_ip {
+  my $addr;
+  my $host   = shift;
+  my $server = "127.0.0.1";
+  my $ip     = nslookup( host => $host, server => $server, type => "A" );
+
+  return $ip;
 }
 
 sub get_options {

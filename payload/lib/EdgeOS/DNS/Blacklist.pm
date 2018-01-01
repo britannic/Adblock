@@ -30,7 +30,6 @@ use File::Basename;
 use Getopt::Long;
 use Term::Cap;
 use HTTP::Tiny;
-use Net::Nslookup;
 use POSIX qw{geteuid getegid getgroups};
 use Socket (
   qw{
@@ -73,7 +72,6 @@ our @EXPORT_OK = (
     get_cols
     get_dev_stats
     get_file
-    get_ip
     get_url
     get_user
     gotoxy
@@ -386,33 +384,6 @@ sub get_hash {
 
   ${$hash} = $value if $value;
   return $hash_ref;
-}
-
-# Get an IP address from a hostname
-sub get_ip {
-
-  # Check to see if Net::NSLookup is present
-#   my $nslookup = eval { require Net::Nslookup; 1 };
-  my $addr;
-  my $host   = shift;
-  my $server = "127.0.0.1";
-  my $ip     = nslookup( host => $host, server => $server, type => "A" );
-
-  return $ip;
-
-#   my ( $err, @getaddr ) = getaddrinfo( $host, 0 );
-#
-#   if ( $getaddr[0]->{family} == AF_INET ) {
-#     return "" if length( $getaddr[0]->{addr} ) < 16;
-#     $addr = unpack_sockaddr_in( $getaddr[0]->{addr} );
-#     $ip = inet_ntop( AF_INET, $addr );
-#   }
-#   else {
-#     return "" if length( $getaddr[0]->{addr} ) < 28;
-#     $addr = unpack_sockaddr_in6( $getaddr[0]->{addr} );
-#     $ip = inet_ntop( $getaddr[0]->{family}, $addr );
-#   }
-#   return $ip;
 }
 
 # Process a configure file and extract the blacklist data set
