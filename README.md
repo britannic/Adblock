@@ -31,20 +31,20 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Installation
 
 - To install:
-    * download install_dnsmasq_blklist.v3.7.4.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.7.4.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/70/install_dnsmasq_blklist.v3.7.4.tgz
+    * download install_dnsmasq_blklist.v3.7.5.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.7.5.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/71/install_dnsmasq_blklist.v3.7.5.tgz
         - cd /tmp
-        - tar zxvf ./install_dnsmasq_blklist.v3.7.4.tgz
-        - bash ./install_dnsmasq_blklist.v3.7.4
+        - tar zxvf ./install_dnsmasq_blklist.v3.7.5.tgz
+        - bash ./install_dnsmasq_blklist.v3.7.5
         - select menu option #0 if installing for the first time
         - select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #1
 
 - Uninstall
-    * /tmp/install_dnsmasq_blklist.v3.7.4
+    * /tmp/install_dnsmasq_blklist.v3.7.5
         - select option #1
 ---
 ## Release Notes
-### Version 3.7.4
+### Version 3.7.5
 - Patch
     - Changed test routines to resolve IP lookups with dnsmasq, bypassing the router's internet DNS lookups
     - Simplified setup to use update-dnsmasq.pl and remove code redundancy

@@ -40,7 +40,6 @@ begin
 delete system task-scheduler task update_blacklists
 set service dns forwarding blacklist disabled false
 set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
-set service dns forwarding blacklist domains include 2o7.net
 set service dns forwarding blacklist domains include adk2x.com
 set service dns forwarding blacklist domains include adsrvr.org
 set service dns forwarding blacklist domains include adtechus.net
