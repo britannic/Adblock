@@ -705,7 +705,7 @@ sub setup {
     exec_command(
       {
         cmd =>
-          qq{install -o root -g vyattacfg -m 0755 $cfg->{postcfg} "$cfg->{postcfgd}/$cfg->{postcfg}"},
+          qq{install -o root -g vyattacfg -m 0555 $cfg->{postcfg} "$cfg->{postcfgd}/$cfg->{postcfg}"},
         exec_msg =>
           qq{Installing $name $cfg->{postcfg} to $cfg->{postcfgd}/},
         fail_msg =>

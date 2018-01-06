@@ -208,15 +208,15 @@ sub get_cfg_actv {
   if ($blklst_exists) {
     $config->setLevel(q{service dns forwarding blacklist});
     $input->{config}->{disabled} = $config->$returnValue(q{disabled}) // $FALSE;
+    $input->{config}->{disabled}
+      = $input->{config}->{disabled} eq q{false} ? $FALSE : $TRUE;
+
     $input->{config}->{dns_redirect_ip}
       = $config->$returnValue(q{dns-redirect-ip}) // q{0.0.0.0};
 
     for my $key ( $config->$returnValues(q{exclude}) ) {
       $input->{config}->{exclude}->{$key} = 1;
     }
-
-    $input->{config}->{disabled}
-      = $input->{config}->{disabled} eq q{false} ? $FALSE : $TRUE;
 
     for my $area (qw{hosts domains}) {
       $config->setLevel(qq{service dns forwarding blacklist $area});
@@ -254,22 +254,25 @@ sub get_cfg_actv {
           );
       }
     }
+
   }
   else {
-    $input->{show} = $TRUE;
+#     $input->{show} = $TRUE;
+    $input->{config}->{disabled} = $TRUE;
     log_msg(
       {
         logsys  => q{},
         show    => $input->{show},
-        msg_typ => q{ERROR},
+        msg_typ => q{INFO},
         msg_str =>
-          q{[service dns forwarding blacklist is not configured], exiting!},
+          q{[service dns forwarding blacklist is not configured], resetting dnsmasq!},
       }
     );
     return;
   }
   if ( ( !scalar keys %{ $input->{config}->{domains}->{src} } )
-    && ( !scalar keys %{ $input->{config}->{hosts}->{src} } ) )
+    && ( !scalar keys %{ $input->{config}->{hosts}->{src} } )
+    && ($blklst_exists) )
   {
     $input->{show} = $TRUE;
     log_msg(

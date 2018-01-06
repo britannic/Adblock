@@ -46,7 +46,6 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Release Notes
 ### Version 3.7.4
 - Patch
-    - Added logic to detect boot state and background update-dnsmasq.pl
     - Changed test routines to resolve IP lookups with dnsmasq, bypassing the router's internet DNS lookups
     - Simplified setup to use update-dnsmasq.pl and remove code redundancy
     - Tested on ER-X v1.9.7.hotfix.4

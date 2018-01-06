@@ -133,8 +133,9 @@ sub main {
   log_msg(
     {
       cols    => $cols,
+      eof     => qq{\n},
       logsys  => q{},
-      msg_str => qq{---+++ $NAME $VERSION +++---},
+      msg_str => qq{Starting } . basename($0) . qq{ v${VERSION}},
       msg_typ => q{INFO},
       show    => $show,
     }
@@ -149,17 +150,17 @@ sub main {
     ? get_cfg_file( { config => $cfg, file => $cfg_file } )
     : get_cfg_actv( { config => $cfg, show => $show } );
 
-  log_msg(
-    {
-      cols    => $cols,
-      logsys  => q{},
-      msg_str => qq{Cannot load dnsmasq blacklist configuration - exiting},
-      msg_typ => q{ERROR},
-      show    => $show,
-    }
-    ),
-    return
-    if !$success;
+#   log_msg(
+#     {
+#       cols    => $cols,
+#       logsys  => q{},
+#       msg_str => qq{Cannot load dnsmasq blacklist configuration - exiting},
+#       msg_typ => q{ERROR},
+#       show    => $show,
+#     }
+#     ),
+#     return
+#     if !$success;
 
   # Now proceed if blacklist is enabled
   if ( !$cfg->{disabled} ) {
@@ -171,7 +172,7 @@ sub main {
     }
 
     # Process each area
-    my $area_count = (@areas);
+#     my $area_count = (@areas);
     for my $area (@areas) {
       my ( $prefix, @threads );
       my $max_thrds = 8;
@@ -309,11 +310,12 @@ sub main {
         if ( exists $data->{host} && scalar $rec_count ) {
           log_msg(
             {
-              cols                             => $cols,
-              logsys                           => q{},
-              msg_str                          => sprintf(
+              cols    => $cols,
+              logsys  => q{},
+              msg_str => sprintf(
                 q{%s lines received from: %s } => $rec_count,
-              $data->{host}),
+                $data->{host}
+              ),
               msg_typ => q{INFO},
               show    => $show,
             }
@@ -388,6 +390,7 @@ sub main {
             log_msg(
               {
                 cols    => $cols,
+                eof     => qq{\n},
                 logsys  => q{},
                 msg_str => qq{Zero records processed from $data->{src}!},
                 msg_typ => q{WARNING},
@@ -429,6 +432,7 @@ sub main {
           log_msg(
             {
               cols    => $cols,
+              eof     => qq{\n},
               logsys  => q{},
               msg_str => sprintf(
                 qq{$area blacklisted: domain %s %s times} => $key,
@@ -460,31 +464,60 @@ sub main {
         log_msg(
           {
             cols   => $cols,
+            eof    => qq{\n},
             logsys => q{},
             msg_str =>
-              qq{Wrote flagged domains command to: $cfg->{flg_file}},
+              qq{Wrote flagged domains to: $cfg->{flg_file}},
             msg_typ => q{INFO},
             show    => $show,
           }
         );
       }
 
-      $area_count--;
-      say q{} if ( $area_count == 1 && $show );    # print a final line feed
+#       $area_count--;
+#       say q{} if ( $area_count == 1 && $show );    # print a final line feed
     }
   }
   elsif ( $cfg->{disabled} ) {
+    my $conf_state = !$success ? q{isn't configured} : q{is disabled};
+
+    log_msg(
+      {
+        cols   => $cols,
+        eof    => qq{\n},
+        logsys => q{},
+        msg_str =>
+          qq{$NAME $VERSION $conf_state...},
+        msg_typ => q{INFO},
+        show    => $show,
+      }
+    );
+
     for my $file ( glob qq{$cfg->{dmasq_d}/{domains,hosts}*blacklist.conf} ) {
+      log_msg(
+        {
+          cols   => $cols,
+          eof    => qq{\n},
+          logsys => q{},
+          msg_str =>
+            qq{Removing $file},
+          msg_typ => q{INFO},
+          show    => $show,
+        }
+      );
       delete_file( { file => $file } ) if $file;
     }
   }
 
   # Clean up the status line
-  print $c->{off}, qq{\r}, pad_str(), qq{\r} if $show;
+  print $c->{off}, qq{\r}, pad_str(), qq{\r} if ( $show && !$cfg->{disabled} );
+
+#   say q{} if $show;    # print a final line feed
 
   log_msg(
     {
       cols    => $cols,
+      eof     => qq{\n},
       logsys  => q{},
       msg_str => q{Reloading dnsmasq configuration...},
       msg_typ => q{INFO},
@@ -499,6 +532,7 @@ sub main {
   log_msg(
     {
       cols    => $cols,
+      eof     => qq{\n},
       logsys  => q{},
       msg_str => q{Reloading dnsmasq configuration failed},
       msg_typ => q{ERROR},
@@ -511,7 +545,7 @@ sub main {
   closelog();
 
   # Finish with a linefeed if '-v' is selected
-  say $c->{on}, q{} if $show;
+  print $c->{on}, q{} if $show;
 }
 
 # Process command line options and print usage

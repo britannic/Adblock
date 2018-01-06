@@ -35,7 +35,7 @@ INSTALL="install_${NAME}.v${VERSION}"
 LIB="~/Projects/AdBlock/payload/lib/EdgeOS/DNS/Blacklist.pm"
 PAYLOAD='payload'
 POSTINSTALL="Install_${NAME}"
-SED='gsed -i.bak'
+SED='/usr/local/bin/gsed -i.bak'
 SEDCMD='s/Copyright (C) 20../Copyright (C) '$(date +"%Y")'/g'
 SEDVER='s/^VERSION=.*$/VERSION=\"'${VERSION}'\"/g'
 UPDATE_CPYRT=(LICENSE decompress README.md)
