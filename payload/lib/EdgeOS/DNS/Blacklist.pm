@@ -705,7 +705,7 @@ LINE:
           ->{duplicates}++;
       }
 
-      # Add to the exclude list, so the next source doesnt duplicate values
+      # Add to the exclude list, so the next source doesn't duplicate values
       $input->{config}->{ $input->{area} }->{exclude}->{$element} = 1;
     }
 

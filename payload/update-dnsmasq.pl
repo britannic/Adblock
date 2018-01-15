@@ -150,18 +150,6 @@ sub main {
     ? get_cfg_file( { config => $cfg, file => $cfg_file } )
     : get_cfg_actv( { config => $cfg, show => $show } );
 
-#   log_msg(
-#     {
-#       cols    => $cols,
-#       logsys  => q{},
-#       msg_str => qq{Cannot load dnsmasq blacklist configuration - exiting},
-#       msg_typ => q{ERROR},
-#       show    => $show,
-#     }
-#     ),
-#     return
-#     if !$success;
-
   # Now proceed if blacklist is enabled
   if ( !$cfg->{disabled} ) {
     my @areas = ();

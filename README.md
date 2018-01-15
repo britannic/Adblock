@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
         - tar zxvf ./install_dnsmasq_blklist.v3.7.5.tgz
         - bash ./install_dnsmasq_blklist.v3.7.5
         - select menu option #0 if installing for the first time
-        - select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #1
+        - select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #0
 
 - Uninstall
     * /tmp/install_dnsmasq_blklist.v3.7.5
@@ -209,15 +209,6 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Additional excludes added based on user feedback
     - Minor optimizations and additional tests added
     - Setup commands now include PURGE to clean up stale config sessions:
-
-| # | Option  |                         Function                          |
-|---|---------|-----------------------------------------------------------|
-| 1 | INSTALL |Install dnsmasq blacklist CLI configuration functionality|
-| 2 | REMOVE  |Remove dnsmasq blacklist CLI configuration functionality|
-| 3 | TEST    |Validate dnsmasq blacklist CLI configuration functionality|
-| 4 | BACKUP  |Save blacklist configuration to /config/user-data/blacklist.cmds|
-| 5 | PURGE   |Clean up stale config sessions|
-| 5 | QUIT    |Exit the installer|
 ---
 
 ### v3.5:
