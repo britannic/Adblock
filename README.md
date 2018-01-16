@@ -31,19 +31,24 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Installation
 
 - To install:
-    * download install_dnsmasq_blklist.v3.7.5.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.7.5.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/71/install_dnsmasq_blklist.v3.7.5.tgz
+    * download install_dnsmasq_blklist.v3.7.6.tgz
+        - curl -o /tmp/install_dnsmasq_blklist.v3.7.6.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/72/install_dnsmasq_blklist.v3.7.6.tgz
         - cd /tmp
-        - tar zxvf ./install_dnsmasq_blklist.v3.7.5.tgz
-        - bash ./install_dnsmasq_blklist.v3.7.5
+        - tar zxvf ./install_dnsmasq_blklist.v3.7.6.tgz
+        - bash ./install_dnsmasq_blklist.v3.7.6
         - select menu option #0 if installing for the first time
         - select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #0
 
 - Uninstall
-    * /tmp/install_dnsmasq_blklist.v3.7.5
+    * /tmp/install_dnsmasq_blklist.v3.7.6
         - select option #1
 ---
 ## Release Notes
+
+### Version 3.7.6
+- Patch
+  - Fixes bug when CloudFlare or HTTP server returns an error page for a downloaded source. If the requested source page is proxied or returns a complex error, all the content was written to the dnsmasq source configuration file as a comment, but in some cases the commenting failed, due to xml or other types of output.
+
 ### Version 3.7.5
 - Patch
     - Changed test routines to resolve IP lookups with dnsmasq, bypassing the router's internet DNS lookups
@@ -53,14 +58,12 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Tested on EdgeRouter Lite v1.9.7+hotfix.4
 ---
 
-## Release Notes
 ### Version 3.7.3
 - Patch
     - Added a generic delete for the now unsupported Debian Wheezy-Backports repository
     - Tested on the ER-X with EdgeOS 1.9.7.hotfix.4
 ---
 
-## Release Notes
 ### Version 3.7.2
 - Patch
     - Added a delete for the now unsupported Debian Wheezy-Backports repository
@@ -68,7 +71,6 @@ Unless required by applicable law or agreed to in writing, software distributed 
     - Tested on the ER-X with EdgeOS 1.9.7.hotfix.4
 ---
 
-## Release Notes
 ### Version 3.7.1
 - Patch
     - Removed Debian Wheezy-Backports repository
