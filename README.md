@@ -420,7 +420,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
          executable {
              path /config/scripts/update-blacklists-dnsmasq.pl
          }
-         interval 6h
+         interval 1d
      }
 ```
 
