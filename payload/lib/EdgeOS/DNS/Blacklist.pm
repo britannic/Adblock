@@ -481,8 +481,6 @@ sub get_url {
     SPLIT  => qr{\R|<br \/>}oms,
   };
 
-#   my $get = $ua->get( $input->{url} );
-
   if ( $ua->{success} ) {
     $input->{success} = 1;
     $input->{data}    = {
@@ -496,13 +494,13 @@ sub get_url {
     log_msg(
       {
         logsys  => q{},
-        msg_str => qq{get_url: $ua->{status}: $ua->{reason}: $ua->{content}},
+        msg_str => qq{get_url: $ua->{status}: $ua->{reason}},
         msg_typ => q{WARNING},
       }
     );
     $input->{data} = { 1 => $ua->{content} };
-    @{$input}{qw{content reason status success}}
-      = @{$ua}{qw{content reason status success}};
+    @{$input}{qw{reason status success}}
+      = @{$ua}{qw{reason status success}};
     return $input;
   }
 }

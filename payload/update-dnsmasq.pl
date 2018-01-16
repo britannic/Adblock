@@ -366,7 +366,7 @@ sub main {
             my @data = (
               sprintf(
                     qq{# No data received\n# HTTP Status: %s\n# Reason: %s\n}
-                  . qq{# Content: %s\n} => @{$data}{qw{status reason content}}
+                  . qq{# Content: %s\n} => @{$data}{qw{status reason}}
               )
             );
             write_file(
