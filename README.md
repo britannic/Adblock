@@ -21,7 +21,6 @@ You may obtain a copy of the License at
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-
 ## Features
 
 * Generates configuration files used directly by dnsmasq to redirect dns lookups
@@ -37,12 +36,12 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 * To install:
   * download install_dnsmasq_blklist.v3.7.6.tgz
-      * curl -o /tmp/install_dnsmasq_blklist.v3.7.6.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/72/install_dnsmasq_blklist.v3.7.6.tgz
-      * cd /tmp
-      * tar zxvf ./install_dnsmasq_blklist.v3.7.6.tgz
-      * bash ./install_dnsmasq_blklist.v3.7.6
-      * select menu option #0 if installing for the first time
-      * select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #0
+    *curl -o /tmp/install_dnsmasq_blklist.v3.7.6.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/72/install_dnsmasq_blklist.v3.7.6.tgz
+    *cd /tmp
+    *tar zxvf ./install_dnsmasq_blklist.v3.7.6.tgz
+    *bash ./install_dnsmasq_blklist.v3.7.6
+    *select menu option #0 if installing for the first time
+    *select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #0
 
 * Uninstall
 
@@ -112,7 +111,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### Version 3.6.4.2:
+### Version 3.6.4.2
 
 * Enhancements and minor bug fix
   * Added experimental support for UniFi Security Gateways (version v4.3.49 and above)
@@ -120,14 +119,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### Version 3.6.4.1:
+### Version 3.6.4.1
 
 * Fix
   * Added back YoYo source as it is back online
 
 ---
 
-### v3.6.4:
+### v3.6.4
 
 * Fixes
   * Removed YoYo source as it is no longer active
@@ -135,14 +134,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.6.3.3:
+### v3.6.3.3
 
 * Enhancements
   * Additional exclusions added to the blacklist commands file
 
 ---
 
-### v3.6.3.2:
+### v3.6.3.2
 
 * Fixes
   * Rewrote version checker to handle EdgeOS versions with an additional sub releases, i.e. v1.9.1.1, v1.9.1.1.1, etc
@@ -150,7 +149,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.6.3.1:
+### v3.6.3.1
 
 * Fixes
   * Updated blacklist exclusions and includes
@@ -158,7 +157,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.6:
+### v3.6
 
 * Enhancements
   * Ability to add a source that uses a local file instead of HTTP
@@ -233,7 +232,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.5.5:
+### v3.5.5
 
 * Updates/fixes include:
   * Added clarifying explanation for failed IP tests; advises user to ignore if router resolves upstream DNS and not locally
@@ -242,7 +241,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.5.3:
+### v3.5.3
 
 * Updates/fixes include:
   * Added code to fix 'set' failures if /opt/vyatta/active/service/dns/forwarding/ group ownership isn't writable for the operator
@@ -252,7 +251,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.5:
+### v3.5
 
 * Updates/fixes include:
   * Global exclude is now available ([set service dns forwarding blacklist exclude ...])
@@ -267,7 +266,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.3.2:
+### v3.3.2
 
 * Non-essential functions have been removed
   * Command line switches reduced to:
@@ -344,7 +343,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.24d:
+### v3.24d
 
 * Updates include:
   * 'hosts' exclusions now incorporates 'domains' exclusions and blacklists
@@ -363,7 +362,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.22rc1:
+### v3.22rc1
 
 * Updates include:
   * Fixes excluded FQDNs by using precise matching instead of fuzzy (i.e. 1.domain.tld won't also exclude b1.domain.tld)
@@ -378,7 +377,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.15:
+### v3.15
 
 * Enhancements:
   * Logging to /var/log/update-blacklists-dnsmasq.log
@@ -390,21 +389,21 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### v3.12:
+### v3.12
 
 * Fixes:
   * Fixed bug reported by @soehest where certain FQDNs were being rejected by the stream processor.
 
 ---
 
-### v3.10:
+### v3.10
 
 * Enhancements:
   * Now supports https:// source URLs and improved regex handling in the stream processing engine.
 
 ---
 
-### v3.00:
+### v3.00
 
 * Enhancements:
   * No longer requires regex strings, just the line prefix/preamble before the hostname in the download. If a version of ADBlock was installed previously, you will need to select option 2 to remove it and then install this version. This is necessary to ensure the configure paths are correctly set up for the new prefix option which replaces the regex string.
@@ -503,7 +502,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
     }
 ```
 
-## Example CLI commands to configure the ADBlock Blacklist:
+## Example CLI commands to configure the ADBlock Blacklist
 
     set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
     set service dns forwarding blacklist disabled false
@@ -561,7 +560,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
     set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq.pl
     set system task-scheduler task update_blacklists interval 6h
 
-## Notes:
+## Notes
 
 For proper operation, first ensure dnsmasq is set up correctly, e.g.:
 
