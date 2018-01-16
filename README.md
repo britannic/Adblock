@@ -1,13 +1,16 @@
 # UBNT EdgeMax dnsmasq Blacklist and Adware Blocking
-[community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
 
-NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks¨
+[Click to view the https://community.ubnt.com/ thread](https://community.ubnt.com/t5/EdgeMAX/CLI-Integrated-dnsmasq-Adblocking-amp-Blacklisting-v3-7-6-Easy/td-p/1344740)
+
+NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networksï¿½
 
 ## Copyright
+
 * Copyright (C) 2018 Helm Rock Consulting
 
 ## Overview
-EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at (https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
+
+EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
 
 ## Licenses
 
@@ -20,120 +23,151 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 
 ## Features
+
 * Generates configuration files used directly by dnsmasq to redirect dns lookups
 * Integrated with the EdgeMax OS CLI
 * Any FQDN in the blacklist will force dnsmasq to return the configured dns redirect IP address
 
 ## Compatibility
+
 * update-dnsmasq.pl has been tested on the EdgeRouter Lite and ER-X family of routers, versions v1.7.0-v1.9.7+hotfix.4
 * Since the EdgeOS is a fork and port of Vyatta 6.3, this script could be adapted to work on VyOS and Vyatta derived ports
 
 ## Installation
 
-- To install:
-    * download install_dnsmasq_blklist.v3.7.6.tgz
-        - curl -o /tmp/install_dnsmasq_blklist.v3.7.6.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/72/install_dnsmasq_blklist.v3.7.6.tgz
-        - cd /tmp
-        - tar zxvf ./install_dnsmasq_blklist.v3.7.6.tgz
-        - bash ./install_dnsmasq_blklist.v3.7.6
-        - select menu option #0 if installing for the first time
-        - select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #0
+* To install:
+  * download install_dnsmasq_blklist.v3.7.6.tgz
+      * curl -o /tmp/install_dnsmasq_blklist.v3.7.6.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/72/install_dnsmasq_blklist.v3.7.6.tgz
+      * cd /tmp
+      * tar zxvf ./install_dnsmasq_blklist.v3.7.6.tgz
+      * bash ./install_dnsmasq_blklist.v3.7.6
+      * select menu option #0 if installing for the first time
+      * select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #0
 
-- Uninstall
-    * /tmp/install_dnsmasq_blklist.v3.7.6
-        - select option #1
+* Uninstall
+
+  * /tmp/install_dnsmasq_blklist.v3.7.6
+    * select option #1
+
 ---
+
 ## Release Notes
 
 ### Version 3.7.6
-- Patch
-  - Fixes bug when CloudFlare or HTTP server returns an error page for a downloaded source. If the requested source page is proxied or returns a complex error, all the content was written to the dnsmasq source configuration file as a comment, but in some cases the commenting failed, due to xml or other types of output.
+
+* Patch
+  * Fixes bug when CloudFlare or HTTP server returns an error page for a downloaded source. If the requested source page is proxied or returns a complex error, all the content was written to the dnsmasq source configuration file as a comment, but in some cases the commenting failed, due to xml or other types of output.
 
 ### Version 3.7.5
-- Patch
-    - Changed test routines to resolve IP lookups with dnsmasq, bypassing the router's internet DNS lookups
-    - Simplified setup to use update-dnsmasq.pl and remove code redundancy
-    - Tested on ER-X v1.9.7.hotfix.4
-    - Tested on USG UniFi Gateway 3 v4.4.12
-    - Tested on EdgeRouter Lite v1.9.7+hotfix.4
+
+* Patch
+  * Changed test routines to resolve IP lookups with dnsmasq, bypassing the router's internet DNS lookups
+  * Simplified setup to use update-dnsmasq.pl and remove code redundancy
+  * Tested on ER-X v1.9.7.hotfix.4
+  * Tested on USG UniFi Gateway 3 v4.4.12
+  * Tested on EdgeRouter Lite v1.9.7+hotfix.4
+
 ---
 
 ### Version 3.7.3
-- Patch
-    - Added a generic delete for the now unsupported Debian Wheezy-Backports repository
-    - Tested on the ER-X with EdgeOS 1.9.7.hotfix.4
+
+* Patch
+  * Added a generic delete for the now unsupported Debian Wheezy-Backports repository
+  * Tested on the ER-X with EdgeOS 1.9.7.hotfix.4
+
 ---
 
 ### Version 3.7.2
-- Patch
-    - Added a delete for the now unsupported Debian Wheezy-Backports repository
-    - Add apt-utils download to ensure new TLS/SSL Perl libs are installed
-    - Tested on the ER-X with EdgeOS 1.9.7.hotfix.4
+
+* Patch
+  * Added a delete for the now unsupported Debian Wheezy-Backports repository
+  * Add apt-utils download to ensure new TLS/SSL Perl libs are installed
+  * Tested on the ER-X with EdgeOS 1.9.7.hotfix.4
+
 ---
 
 ### Version 3.7.1
-- Patch
-    - Removed Debian Wheezy-Backports repository
-    - Added dropbox.com blacklist exclusions as some blocklists were false flagging it
+
+* Patch
+  * Removed Debian Wheezy-Backports repository
+  * Added dropbox.com blacklist exclusions as some blocklists were false flagging it
+
 ---
 
 ### Version 3.7.0
-- Updates
-    - Added code to update HTTP::Tiny Perl library
-    - Updated get_url() to verify SSL/TLS certificates
+
+* Updates
+  * Added code to update HTTP::Tiny Perl library
+  * Updated get_url() to verify SSL/TLS certificates
+
 ---
 
 ### Version 3.6.5
-- Enhancements
-    - Updated to set directory group ownership for /opt/vyatta/config to prevent issues  attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
-    - Improved menu driven install
-    - Added /config/postconfig.d/Install_dnsmasq_blklist
-    - Added logic to prevent downloading from web sources with invalid SSL certificates
+
+* Enhancements
+  * Updated to set directory group ownership for /opt/vyatta/config to prevent issues  attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
+  * Improved menu driven install
+  * Added /config/postconfig.d/Install_dnsmasq_blklist
+  * Added logic to prevent downloading from web sources with invalid SSL certificates
+
 ---
 
 ### Version 3.6.4.2:
-- Enhancements and minor bug fix
-    - Added experimental support for UniFi Security Gateways (version v4.3.49 and above)
-    - Fixed a minor version display bug when running "update-dnsmasq.pl -version"
+
+* Enhancements and minor bug fix
+  * Added experimental support for UniFi Security Gateways (version v4.3.49 and above)
+  * Fixed a minor version display bug when running "update-dnsmasq.pl -version"
+
 ---
 
 ### Version 3.6.4.1:
-- Fix
-    - Added back YoYo source as it is back online
+
+* Fix
+  * Added back YoYo source as it is back online
+
 ---
 
 ### v3.6.4:
-- Fixes
-    - Removed YoYo source as it is no longer active
-    - Tested with EdgeOS v1.9.7+hotfix.4
+
+* Fixes
+  * Removed YoYo source as it is no longer active
+  * Tested with EdgeOS v1.9.7+hotfix.4
+
 ---
 
 ### v3.6.3.3:
-- Enhancements
-    - Additional exclusions added to the blacklist commands file
+
+* Enhancements
+  * Additional exclusions added to the blacklist commands file
+
 ---
 
 ### v3.6.3.2:
-- Fixes
-    - Rewrote version checker to handle EdgeOS versions with an additional sub releases, i.e. v1.9.1.1, v1.9.1.1.1, etc
-    - Added additional logic to skip testing if main installer exited with an error
+
+* Fixes
+  * Rewrote version checker to handle EdgeOS versions with an additional sub releases, i.e. v1.9.1.1, v1.9.1.1.1, etc
+  * Added additional logic to skip testing if main installer exited with an error
+
 ---
 
 ### v3.6.3.1:
-- Fixes
-    - Updated blacklist exclusions and includes
-    - Removed volkerschatz as a source, since the blacklisting service is no longer offered
+
+* Fixes
+  * Updated blacklist exclusions and includes
+  * Removed volkerschatz as a source, since the blacklisting service is no longer offered
+
 ---
 
 ### v3.6:
-- Enhancements
-    - Ability to add a source that uses a local file instead of HTTP
+
+* Enhancements
+  * Ability to add a source that uses a local file instead of HTTP
 
             set service dns forwarding blacklist hosts source myhosts description 'Blacklist file source'
             set service dns forwarding blacklist hosts source myhosts dns-redirect-ip 10.10.10.1
             set service dns forwarding blacklist hosts source myhosts file /config/user-data/blist.hosts.src
 
-    - file contents example for /config/user-data/blist.hosts.src:
+  * file contents example for /config/user-data/blist.hosts.src:
 
             gsmtop.net
             click.buzzcity.net
@@ -155,17 +189,17 @@ Unless required by applicable law or agreed to in writing, software distributed 
             admicro2.vcmedia.vn
             admicro1.vcmedia.vn
 
-- Each source can now have its own dns-redirect-ip for granular control
+* Each source can now have its own dns-redirect-ip for granular control
         set service dns forwarding blacklist hosts source openphish dns-redirect-ip 172.16.10.1
 
-- Revised source list
-    - Redundant sources removed:
+* Revised source list
+  * Redundant sources removed:
             delete service dns forwarding blacklist hosts source adaway # description 'Blocking mobile ad providers and some analytics providers'
             delete service dns forwarding blacklist hosts source malwaredomainlist # description '127.0.0.1 based host and domain list'
             delete service dns forwarding blacklist hosts source someonewhocares # description 'Zero based host and domain list'
             delete service dns forwarding blacklist hosts source winhelp2002 # description 'Zero based host and domain list'
 
-    - Retained sources:
+  * Retained sources:
             set service dns forwarding blacklist domains source malc0de description 'List of zones serving malicious executables observed by malc0de.com/database/'
             set service dns forwarding blacklist domains source malc0de prefix 'zone '
             set service dns forwarding blacklist domains source malc0de url 'http://malc0de.com/bl/ZONES'
@@ -179,15 +213,15 @@ Unless required by applicable law or agreed to in writing, software distributed 
             set service dns forwarding blacklist hosts source yoyo prefix ''
             set service dns forwarding blacklist hosts source yoyo url 'http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext'
 
-    - Added sources:
-        - Domains:
+  * Added sources:
+    * Domains:
                 set service dns forwarding blacklist domains source simple_tracking description 'Basic tracking list by Disconnect'
                 set service dns forwarding blacklist domains source simple_tracking prefix ''
                 set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
                 set service dns forwarding blacklist domains source zeus description 'abuse.ch ZeuS domain blocklist'
                 set service dns forwarding blacklist domains source zeus prefix ''
                 set service dns forwarding blacklist domains source zeus url 'https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist'
-        - Hosts:
+  * Hosts:
                 set service dns forwarding blacklist hosts source raw.github.com description 'This hosts file is a merged collection of hosts from reputable sources'
                 set service dns forwarding blacklist hosts source raw.github.com prefix '0.0.0.0 '
                 set service dns forwarding blacklist hosts source raw.github.com url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
@@ -195,40 +229,48 @@ Unless required by applicable law or agreed to in writing, software distributed 
                 set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1	 '
                 set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
 
-- Additional excludes added to blacklist configuration list
+* Additional excludes added to blacklist configuration list
+
 ---
 
 ### v3.5.5:
-- Updates/fixes include:
-    - Added clarifying explanation for failed IP tests; advises user to ignore if router resolves upstream DNS and not locally
-    - Fixed minor bug with command shell redirection
-    - Additional excludes added to blacklist configuration list
+
+* Updates/fixes include:
+  * Added clarifying explanation for failed IP tests; advises user to ignore if router resolves upstream DNS and not locally
+  * Fixed minor bug with command shell redirection
+  * Additional excludes added to blacklist configuration list
+
 ---
 
 ### v3.5.3:
-- Updates/fixes include:
-    - Added code to fix 'set' failures if /opt/vyatta/active/service/dns/forwarding/ group ownership isn't writable for the operator
-    - Additional excludes added based on user feedback
-    - Minor optimizations and additional tests added
-    - Setup commands now include PURGE to clean up stale config sessions:
+
+* Updates/fixes include:
+  * Added code to fix 'set' failures if /opt/vyatta/active/service/dns/forwarding/ group ownership isn't writable for the operator
+  * Additional excludes added based on user feedback
+  * Minor optimizations and additional tests added
+  * Setup commands now include PURGE to clean up stale config sessions
+
 ---
 
 ### v3.5:
-- Updates/fixes include:
-    - Global exclude is now available ([set service dns forwarding blacklist exclude ...])
-    - Removed --debug option from update-dnsmasq.pl
-    - New validator script (/configure/scripts/blacklist.t) runs a battery of tests on the blacklist configuration to ensure it is working correctly or checks it is removed correctly
-    - Setup/Remove scripts rewritten in Perl
-    - Fixed issue with install that prevented admin user configuration
-    - Installer now runs under admin and only uses sudo where absolutely necessary
-    - Installer checks to see if service dns forwarding is configured and bails it if not with warning/example configuration
-    - Installer includes these new options:
-    - Non-essential functions have been pruned, command line switches reduced to:
+
+* Updates/fixes include:
+  * Global exclude is now available ([set service dns forwarding blacklist exclude ...])
+  * Removed --debug option from update-dnsmasq.pl
+  * New validator script (/configure/scripts/blacklist.t) runs a battery of tests on the blacklist configuration to ensure it is working correctly or checks it is removed correctly
+  * Setup/Remove scripts rewritten in Perl
+  * Fixed issue with install that prevented admin user configuration
+  * Installer now runs under admin and only uses sudo where absolutely necessary
+  * Installer checks to see if service dns forwarding is configured and bails it if not with warning/example configuration
+  * Installer includes these new options:
+  * Non-essential functions have been pruned, command line switches reduced to:
+
 ---
 
-### v3.3.2: What is new:
-- Non-essential functions have been removed
-    - Command line switches reduced to:
+### v3.3.2:
+
+* Non-essential functions have been removed
+  * Command line switches reduced to:
 
             /config/scripts/update-dnsmasq.pl -h
             usage: update-dnsmasq.pl <options>
@@ -239,15 +281,15 @@ Unless required by applicable law or agreed to in writing, software distributed 
                 -v          # verbose output
                 --version   # show program version number
 
-    - Improved exclusion list rejection
-    - Ability to create a domain list from a source that has FQDNs using the new 'compress' switch (note, use with caution, since you may find legit domains getting completely blocked - especially cloud services like amazonaws, in that case you will need to add specific excludes):
+  * Improved exclusion list rejection
+  * Ability to create a domain list from a source that has FQDNs using the new 'compress' switch (note, use with caution, since you may find legit domains getting completely blocked - especially cloud services like amazonaws, in that case you will need to add specific excludes):
 
             set service dns forwarding blacklist domains source FQDNs_Source compress true
 
-    - Install/remove scripts rewritten in Perl for better error checking
-    - Install/remove logs will be written to /var/log for diagnostics
-    - Flagged domain list with optional include commands written to /var/log/update-dnsmasq_flagged_domains.cmds
-    - Each source will be written to its own file:
+  * Install/remove scripts rewritten in Perl for better error checking
+  * Install/remove logs will be written to /var/log for diagnostics
+  * Flagged domain list with optional include commands written to /var/log/update-dnsmasq_flagged_domains.cmds
+  * Each source will be written to its own file:
 
             root@ubnt:/etc/dnsmasq.d# ls
             README
@@ -261,7 +303,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
             hosts.www.malwaredomainlist.com.blacklist.conf
             hosts.yoyo.org.blacklist.conf
 
-    - Log file (/var/log/update-dnsmasq.pl) now flags frequently blacklisted domains, so you can optionally decide to add them as an include under domains:
+  * Log file (/var/log/update-dnsmasq.pl) now flags frequently blacklisted domains, so you can optionally decide to add them as an include under domains:
 
             root@ubnt:/etc/dnsmasq.d# tail -n 30 /var/log/update-dnsmasq.log
             Nov 29 09:45:50 2015: INFO: hosts blacklisted: domain loniricarena.ru 4 times
@@ -295,68 +337,82 @@ Unless required by applicable law or agreed to in writing, software distributed 
             Nov 29 09:45:51 2015: INFO: hosts blacklisted: domain thomasadot.com 4 times
             Nov 29 09:45:52 2015: INFO: Reloading dnsmasq configuration...
 
-    - Improved memory usage for threads has been implemented
-    - Uses HTTP::Tiny for smaller memory footprint with threads
-    - Optional -f config.boot parser has been completely rewritten, so that the XorpConfigParser.pm module is no longer required (saves on memory overhead and compilation time)
-    - Over 70% of the code has been rewritten or updated
+  * Improved memory usage for threads has been implemented
+  * Uses HTTP::Tiny for smaller memory footprint with threads
+  * Optional -f config.boot parser has been completely rewritten, so that the XorpConfigParser.pm module is no longer required (saves on memory overhead and compilation time)
+  * Over 70% of the code has been rewritten or updated
+
 ---
 
 ### v3.24d:
-- Updates include:
-    - 'hosts' exclusions now incorporates 'domains' exclusions and blacklists
-    - Additional 'good hosts' excluded from blacklisting in the supplied install configuration
-    - Fixes excluded FQDNs by using precise matching instead of fuzzy (i.e. 1.domain.tld won't also exclude b1.domain.tld)
-    - Entire blacklist can be disabled using 'set service dns forwarding blacklist disabled true'
-    - Ability to add domain sources, which compile to domain.blacklist.conf allowing for domain wildcards, so that all hosts in a domain will now be blocked
-    - Exclude and include lists have been moved and now apply to their parent area, e.g. 'hosts' or 'domains'
-    - New --disable switch enables ADBlock by setting [set service dns forwarding blacklist enabled false]
-    - New --enable switch enables ADBlock by setting [set service dns forwarding blacklist enabled true]
-    - Now uses multi-threading for simultaneous blacklist downloads
-    - Revamped stream processor, now has ability to extract multiple FQDNs from each line or input
-    - Useragent: HTTP get requests now include browser agent information to prevent website robot rejection
-    - Useragent: HTTP/HTTPS handling uses useragent for improved error/timeout control
-    - Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during boot time
+
+* Updates include:
+  * 'hosts' exclusions now incorporates 'domains' exclusions and blacklists
+  * Additional 'good hosts' excluded from blacklisting in the supplied install configuration
+  * Fixes excluded FQDNs by using precise matching instead of fuzzy (i.e. 1.domain.tld won't also exclude b1.domain.tld)
+  * Entire blacklist can be disabled using 'set service dns forwarding blacklist disabled true'
+  * Ability to add domain sources, which compile to domain.blacklist.conf allowing for domain wildcards, so that all hosts in a domain will now be blocked
+  * Exclude and include lists have been moved and now apply to their parent area, e.g. 'hosts' or 'domains'
+  * New --disable switch enables ADBlock by setting [set service dns forwarding blacklist enabled false]
+  * New --enable switch enables ADBlock by setting [set service dns forwarding blacklist enabled true]
+  * Now uses multi-threading for simultaneous blacklist downloads
+  * Revamped stream processor, now has ability to extract multiple FQDNs from each line or input
+  * Useragent: HTTP get requests now include browser agent information to prevent website robot rejection
+  * Useragent: HTTP/HTTPS handling uses useragent for improved error/timeout control
+  * Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during boot time
+
 ---
 
 ### v3.22rc1:
-- Updates include:
-    - Fixes excluded FQDNs by using precise matching instead of fuzzy (i.e. 1.domain.tld won't also exclude b1.domain.tld)
-    - New --disable switch enables ADBlock by setting [set service dns forwarding blacklist enabled false]
-    - New --doc switch prints out condensed man page
-    - New --enable switch enables ADBlock by setting [set service dns forwarding blacklist enabled true]
-    - Now uses multi-threading for simultaneous blacklist downloads
-    - Revamped stream processor, now has ability to extract multiple FQDNs from each line or input
-    - Useragent: HTTP get requests now include browser agent information to prevent website robot rejection
-    - Useragent: HTTP/HTTPS handling uses useragent for improved error/timeout control
-    - Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during router boot time
+
+* Updates include:
+  * Fixes excluded FQDNs by using precise matching instead of fuzzy (i.e. 1.domain.tld won't also exclude b1.domain.tld)
+  * New --disable switch enables ADBlock by setting [set service dns forwarding blacklist enabled false]
+  * New --doc switch prints out condensed man page
+  * New --enable switch enables ADBlock by setting [set service dns forwarding blacklist enabled true]
+  * Now uses multi-threading for simultaneous blacklist downloads
+  * Revamped stream processor, now has ability to extract multiple FQDNs from each line or input
+  * Useragent: HTTP get requests now include browser agent information to prevent website robot rejection
+  * Useragent: HTTP/HTTPS handling uses useragent for improved error/timeout control
+  * Uses own node.def to maintain configuration changes. This also forces the script to run the dnsmasq configuration update after DNS is up during router boot time
+
 ---
 
 ### v3.15:
-- Enhancements:
-    - Logging to /var/log/update-blacklists-dnsmasq.log
-    - --debug option: prints status messages
-    - Additional download sources added to the default lists
-    - Added retry logic for download sources that time out
-    - Task scheduler update interval is now every 6 hours, as some of the sources change hourly (configure interval using "set system task-scheduler task update_blacklists interval"
-    - Status line retains previous downloads for more detail
+
+* Enhancements:
+  * Logging to /var/log/update-blacklists-dnsmasq.log
+  * --debug option: prints status messages
+  * Additional download sources added to the default lists
+  * Added retry logic for download sources that time out
+  * Task scheduler update interval is now every 6 hours, as some of the sources change hourly (configure interval using "set system task-scheduler task update_blacklists interval"
+  * Status line retains previous downloads for more detail
+
 ---
 
 ### v3.12:
-- Fixes:
-    - Fixed bug reported by @soehest where certain FQDNs were being rejected by the stream processor.
+
+* Fixes:
+  * Fixed bug reported by @soehest where certain FQDNs were being rejected by the stream processor.
+
 ---
 
 ### v3.10:
-- Enhancements:
-    - Now supports https:// source URLs and improved regex handling in the stream processing engine.
+
+* Enhancements:
+  * Now supports https:// source URLs and improved regex handling in the stream processing engine.
+
 ---
 
 ### v3.00:
-- Enhancements:
-    - No longer requires regex strings, just the line prefix/preamble before the hostname in the download. If a version of ADBlock was installed previously, you will need to select option 2 to remove it and then install this version. This is necessary to ensure the configure paths are correctly set up for the new prefix option which replaces the regex string.
+
+* Enhancements:
+  * No longer requires regex strings, just the line prefix/preamble before the hostname in the download. If a version of ADBlock was installed previously, you will need to select option 2 to remove it and then install this version. This is necessary to ensure the configure paths are correctly set up for the new prefix option which replaces the regex string.
+
 ---
 
 ## Post Installation
+
 * Here is the scheduler configuration after running install_adblock:
 
 ```python
@@ -368,6 +424,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
          interval 6h
      }
 ```
+
 * The script will also install a default blacklist setup, here is the stanza (show service dns forwarding):
 
 ```python
@@ -505,6 +562,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
     set system task-scheduler task update_blacklists interval 6h
 
 ## Notes:
+
 For proper operation, first ensure dnsmasq is set up correctly, e.g.:
 
     show service dns forwarding
