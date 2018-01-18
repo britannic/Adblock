@@ -236,16 +236,16 @@ sub get_tests {
 
   if ($success) {
     print pad_str(qq{@{[pinwheel()]} Adding tests for key files...});
-
-    $tests->{ $ikey++ } = {
-      comment =>
-        qq{Checking @{[basename( $input->{cfg}->{installer} )]} exists},
-      diag =>
-        qq{@{[basename( $input->{cfg}->{installer} )]} not found - investigate!},
-      lval   => qq{$input->{cfg}->{installer}},
-      result => $TRUE,
-      test   => q{is_file},
-    };
+#
+#     $tests->{ $ikey++ } = {
+#       comment =>
+#         qq{Checking @{[basename( $input->{cfg}->{installer} )]} exists},
+#       diag =>
+#         qq{@{[basename( $input->{cfg}->{installer} )]} not found - investigate!},
+#       lval   => qq{$input->{cfg}->{installer}},
+#       result => $TRUE,
+#       test   => q{is_file},
+#     };
 
     print pinwheel();
     $tests->{ $ikey++ } = {
@@ -581,7 +581,6 @@ sub main {
     dnsmasq_dir => q{/etc/dnsmasq.d},
     failed      => 0,
     flag_file   => q{/var/log/update-dnsmasq-flagged.cmds},
-    installer   => qq{/config/scripts/post-config.d/Install_${NAME}},
     lib         => q{/config/lib/perl},
     mod_dir     => q{EdgeOS/DNS/},
     module      => q{Blacklist.pm},

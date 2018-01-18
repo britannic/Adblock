@@ -187,29 +187,52 @@ sub delete_file {
 
 # Process the active configuration
 sub get_cfg_actv {
-  my $config       = new Vyatta::Config;
-  my $input        = shift;
-  my $exists       = q{existsOrig};
-  my $listNodes    = q{listOrigNodes};
-  my $returnValue  = q{returnOrigValue};
-  my $returnValues = q{returnOrigValues};
+  my $config = new Vyatta::Config;
+  my $input  = shift;
 
-  if ( is_configure() ) {
+#   my $exists       = q{existsOrig};
+#   my $listNodes    = q{listOrigNodes};
+#   my $returnValue  = q{returnOrigValue};
+#   my $returnValues = q{returnOrigValues};
+
+  my $exists       = q{isEffective};
+  my $listNodes    = q{listEffectiveNodes};
+  my $returnValue  = q{returnEffectiveValue};
+  my $returnValues = q{returnEffectiveValues};
+
+  if ( $config->inSession() ) {
     $exists       = q{exists};
     $listNodes    = q{listNodes};
     $returnValue  = q{returnValue};
     $returnValues = q{returnValues};
   }
 
+#   my $verb = $config->inSession() ? "was" : "wasn't";
+#   qx{echo "`date +%H:%M:%S.%3N`: is_configure $verb detected @ boot time" >> /var/log/update-dns.log};
+#   qx{echo "`date +%H:%M:%S.%3N`: `ls -l /etc/nologin`" >> /var/log/update-dns.log};
+#   qx{echo "`date +%H:%M:%S.%3N`: `ps ax`" >> /var/log/update-dns.log};
+#   qx{/bin/cli-shell-api showCfg service dns forwarding blacklist --show-working-only >> /var/log/update-dns.log};
+
 # Check to see if blacklist is configured
   $config->setLevel(q{service dns forwarding});
   my $blklst_exists = $config->$exists(q{blacklist}) ? $TRUE : $FALSE;
 
+  my $verb = $blklst_exists ? "is" : "isn't";
+  log_msg(
+    {
+      logsys  => q{},
+      show    => $input->{show},
+      msg_typ => q{INFO},
+      msg_str => qq{service dns forwarding $verb configured},
+    }
+  );
+
   if ($blklst_exists) {
     $config->setLevel(q{service dns forwarding blacklist});
-    $input->{config}->{disabled} = $config->$returnValue(q{disabled}) // $FALSE;
+    $input->{config}->{disabled} = $config->$returnValue(q{disabled});
     $input->{config}->{disabled}
       = $input->{config}->{disabled} eq q{false} ? $FALSE : $TRUE;
+    return $TRUE if $input->{config}->{disabled};
 
     $input->{config}->{dns_redirect_ip}
       = $config->$returnValue(q{dns-redirect-ip}) // q{0.0.0.0};
@@ -254,27 +277,24 @@ sub get_cfg_actv {
           );
       }
     }
-
   }
   else {
-#     $input->{show} = $TRUE;
-    $input->{config}->{disabled} = $TRUE;
+#     $input->{config}->{disabled} = $TRUE;
     log_msg(
       {
         logsys  => q{},
         show    => $input->{show},
         msg_typ => q{INFO},
         msg_str =>
-          q{[service dns forwarding blacklist is not configured], resetting dnsmasq!},
+          q{[service dns forwarding blacklist] is not configured, resetting dnsmasq!},
       }
     );
     return;
   }
   if ( ( !scalar keys %{ $input->{config}->{domains}->{src} } )
-    && ( !scalar keys %{ $input->{config}->{hosts}->{src} } )
-    && ($blklst_exists) )
+    && ( !scalar keys %{ $input->{config}->{hosts}->{src} } ) )
   {
-    $input->{show} = $TRUE;
+#     $input->{show} = $TRUE;
     log_msg(
       {
         logsys  => q{},
