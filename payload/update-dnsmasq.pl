@@ -128,6 +128,8 @@ sub main {
   usage( { option => q{cfg_file}, exit_code => 1 } )
     if defined $cfg_file && !-e $cfg_file;
 
+  if ( !-t STDIN ) { $show = $FALSE; }
+
   # Start logging
   openlog( $cfg->{log_name}, q{}, LOG_DAEMON );
   log_msg(
