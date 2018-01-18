@@ -35,22 +35,27 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Installation
 
 * To install:
-  * download install_dnsmasq_blklist.v3.7.6.tgz
-    *curl -o /tmp/install_dnsmasq_blklist.v3.7.6.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/72/install_dnsmasq_blklist.v3.7.6.tgz
+  * download install_dnsmasq_blklist.v3.7.7.tgz
+    *curl -o /tmp/install_dnsmasq_blklist.v3.7.7.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/73/install_dnsmasq_blklist.v3.7.7.tgz
     *cd /tmp
-    *tar zxvf ./install_dnsmasq_blklist.v3.7.6.tgz
-    *bash ./install_dnsmasq_blklist.v3.7.6
+    *tar zxvf ./install_dnsmasq_blklist.v3.7.7.tgz
+    *bash ./install_dnsmasq_blklist.v3.7.7
     *select menu option #0 if installing for the first time
     *select menu option #1 to completely remove blacklisting if you have a previous version, then run install again using option #0
 
 * Uninstall
 
-  * /tmp/install_dnsmasq_blklist.v3.7.6
+  * /tmp/install_dnsmasq_blklist.v3.7.7
     * select option #1
 
 ---
 
 ## Release Notes
+
+### Version 3.7.7
+
+* Patch
+  * Fixed a bug in node.def to ensure config.boot blacklist nodes are correctly loaded during reboot.
 
 ### Version 3.7.6
 

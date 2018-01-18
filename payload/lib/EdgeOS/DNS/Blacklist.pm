@@ -93,7 +93,7 @@ our @EXPORT_OK = (
     }
 );
 our $NAME    = q{dnsmasq_blklist};
-our $VERSION = q{3.7.6};
+our $VERSION = q{3.7.7};
 our $TRUE;
 *TRUE = \1;
 our $FALSE;
@@ -206,12 +206,6 @@ sub get_cfg_actv {
     $returnValue  = q{returnValue};
     $returnValues = q{returnValues};
   }
-
-#   my $verb = $config->inSession() ? "was" : "wasn't";
-#   qx{echo "`date +%H:%M:%S.%3N`: is_configure $verb detected @ boot time" >> /var/log/update-dns.log};
-#   qx{echo "`date +%H:%M:%S.%3N`: `ls -l /etc/nologin`" >> /var/log/update-dns.log};
-#   qx{echo "`date +%H:%M:%S.%3N`: `ps ax`" >> /var/log/update-dns.log};
-#   qx{/bin/cli-shell-api showCfg service dns forwarding blacklist --show-working-only >> /var/log/update-dns.log};
 
 # Check to see if blacklist is configured
   $config->setLevel(q{service dns forwarding});
