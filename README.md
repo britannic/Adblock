@@ -35,9 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Installation
 
 * To install:
-  * curl -o /tmp/install_dnsmasq_blklist.v3.7.8.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/74/install_dnsmasq_blklist.v3.7.8.tgz
-  * cd /tmp
-  * tar zxvf ./install_dnsmasq_blklist.v3.7.8.tgz
+  * curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/74/install_dnsmasq_blklist.v3.7.8.tgz | tar zvx
   * bash ./install_dnsmasq_blklist.v3.7.8
   * select menu option #0 if installing for the first time
   * select menu option #1 to remove the integration
