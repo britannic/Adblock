@@ -35,34 +35,39 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ## Installation
 
 * To install:
-  * curl -o /tmp/install_dnsmasq_blklist.v3.7.7.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/73/install_dnsmasq_blklist.v3.7.7.tgz
+  * curl -o /tmp/install_dnsmasq_blklist.v3.7.8.tgz https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/78132/74/install_dnsmasq_blklist.v3.7.8.tgz
   * cd /tmp
-  * tar zxvf ./install_dnsmasq_blklist.v3.7.7.tgz
-  * bash ./install_dnsmasq_blklist.v3.7.7
+  * tar zxvf ./install_dnsmasq_blklist.v3.7.8.tgz
+  * bash ./install_dnsmasq_blklist.v3.7.8
   * select menu option #0 if installing for the first time
   * select menu option #1 to remove the integration
     * if you have a previous version, run install again and select option #0
 
 * Uninstall
 
-  * /tmp/install_dnsmasq_blklist.v3.7.7
+  * /tmp/install_dnsmasq_blklist.v3.7.8
     * select option #1
 
 ---
 
-## Release Notes
+## Version Release Notes
 
-### Version 3.7.7
+### v3.7.8
+
+* Patch
+  * Changed HTTP user agent to emulate curl, so that web servers won't attempt to set cookies etc.
+
+### v3.7.7
 
 * Patch
   * Fixed a bug in node.def to ensure config.boot blacklist nodes are correctly loaded during reboot.
 
-### Version 3.7.6
+### v3.7.6
 
 * Patch
   * Fixes bug when CloudFlare or HTTP server returns an error page for a downloaded source. If the requested source page is proxied or returns a complex error, all the content was written to the dnsmasq source configuration file as a comment, but in some cases the commenting failed, due to xml or other types of output.
 
-### Version 3.7.5
+### v3.7.5
 
 * Patch
   * Changed test routines to resolve IP lookups with dnsmasq, bypassing the router's internet DNS lookups
@@ -73,7 +78,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### Version 3.7.3
+### v3.7.3
 
 * Patch
   * Added a generic delete for the now unsupported Debian Wheezy-Backports repository
@@ -81,7 +86,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### Version 3.7.2
+### v3.7.2
 
 * Patch
   * Added a delete for the now unsupported Debian Wheezy-Backports repository
@@ -90,7 +95,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### Version 3.7.1
+### v3.7.1
 
 * Patch
   * Removed Debian Wheezy-Backports repository
@@ -98,7 +103,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### Version 3.7.0
+### v3.7.0
 
 * Updates
   * Added code to update HTTP::Tiny Perl library
@@ -106,7 +111,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### Version 3.6.5
+### v3.6.5
 
 * Enhancements
   * Updated to set directory group ownership for /opt/vyatta/config to prevent issues  attempting commits as the admin user (factory default admin user is ubnt). Group ownership should be vyattacfg
@@ -116,15 +121,15 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-### Version 3.6.4.2
+### v3.6.4.2
 
 * Enhancements and minor bug fix
-  * Added experimental support for UniFi Security Gateways (version v4.3.49 and above)
-  * Fixed a minor version display bug when running "update-dnsmasq.pl -version"
+  * Added experimental support for UniFi Security Gateways (vv4.3.49 and above)
+  * Fixed a minor vdisplay bug when running "update-dnsmasq.pl -version"
 
 ---
 
-### Version 3.6.4.1
+### v3.6.4.1
 
 * Fix
   * Added back YoYo source as it is back online
@@ -149,7 +154,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ### v3.6.3.2
 
 * Fixes
-  * Rewrote version checker to handle EdgeOS versions with an additional sub releases, i.e. v1.9.1.1, v1.9.1.1.1, etc
+  * Rewrote vchecker to handle EdgeOS versions with an additional sub releases, i.e. v1.9.1.1, v1.9.1.1.1, etc
   * Added additional logic to skip testing if main installer exited with an error
 
 ---

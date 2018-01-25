@@ -93,7 +93,7 @@ our @EXPORT_OK = (
     }
 );
 our $NAME    = q{dnsmasq_blklist};
-our $VERSION = q{3.7.7};
+our $VERSION = q{3.7.8};
 our $TRUE;
 *TRUE = \1;
 our $FALSE;
@@ -482,8 +482,7 @@ LINE:
 sub get_url {
   my $input = shift;
   my $agent
-    = q{Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11) AppleWebKit/601.1.56},
-    q{ (KHTML, like Gecko ) Version / 9.0 Safari / 601.1.56};
+    = q{curl/7.26.0};
 
   my $ua
     = HTTP::Tiny->new( agent => $agent, verify_SSL => 1 )->get( $input->{url} );
