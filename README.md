@@ -4,9 +4,15 @@
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks, Inc.
 
+## **IMPORTANT**
+
+***We do not plan to add new features to this package in the future, as it is in the maintenance mode only.***
+
+In 2017 we created a new project, [blacklist](https://github.com/britannic/blacklist) written in Go, all development work is now focused [there](https://github.com/britannic/blacklist). Support for the new project can be found by reading and posting to this [Ubiquiti Community thread](https://community.ui.com/questions/DNS-Adblocking-and-Blacklisting-dnsmasq-Configuration-Integration-Package-v1-2-4-2/eb05f1b2-5316-4a80-8221-5e8b02575da4).
+
 ## Copyright
 
-* Copyright (C) 2018 Helm Rock Consulting
+* Copyright (C) 2020 Helm Rock Consulting
 
 ## Overview
 
