@@ -383,6 +383,7 @@ sub get_file {
       or die qq{[ERROR]: Unable to open $input->{file}: $!};
     chomp( @{ $input->{data} } = <$CF> );
     close $CF;
+    $input->{success} = 1;
   }
   return $input;
 }
